@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 local UI = MeowTuah.Modules.UI
 local SaveManager = MeowTuah.Modules.SaveManager
 local ThemeManager = MeowTuah.Modules.ThemeManager
