@@ -1,7 +1,3 @@
-local UI = require("../core/UI")
-local SaveManager = require("../core/SaveManager")
-local ThemeManager = require("../core/ThemeManager")
-
 local Game = {
 	GameName = "TEMPLATE",
 	Features = {},
