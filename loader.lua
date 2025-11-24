@@ -75,7 +75,6 @@ function MeowTuah:Initialise()
 	if GameModule then
 		GameModule:Initialise()
 		MeowTuah.CurrentGame = GameName
-		getgenv().MeowTuah = MeowTuah
 		getgenv().MeowTuahLoaded = true
 		return
 	end
