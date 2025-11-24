@@ -1,5 +1,5 @@
 local MeowTuah = {
-	VerbosePrinting = false,
+	VerbosePrinting = true,
 	SupportedGames = {
 		[1] = "cg-2",
 	},
