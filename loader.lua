@@ -35,12 +35,12 @@ function MeowTuah:LoadModule(ModulePath)
 		return loadstring(game:HttpGet(URL, true))()
 	end)
 
+	print(Success, Result)
 	if not Success then
 		MeowTuah:Print(`Failed to load {ModulePath}`, "CRITICAL")
 		return nil
 	end
 
-	print(Success, Result)
 	return Result
 end
 
