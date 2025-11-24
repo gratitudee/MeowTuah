@@ -30,12 +30,12 @@ function Game:CreateUI()
 	Library.ToggleKeybind = Options.MenuKeybind
 
 	ThemeManager:SetLibrary(UI)
-	ThemeManager:SetFolder("MeowTuah/Themes")
+	ThemeManager:SetFolder(`MeowTuah/{Game.GameName}`)
 	ThemeManager:ApplyToTab(SettingsTab)
 
 	SaveManager:SetLibrary(UI)
 	SaveManager:IgnoreThemeSettings()
-	SaveManager:SetFolder(`MeowTuah/Configs/{MeowTuah.CurrentGame}`)
+	SaveManager:SetFolder(`MeowTuah/{Game.GameName}`)
 	SaveManager:BuildConfigSection(SettingsTab)
 	SaveManager:LoadAutoloadConfig()
 end
