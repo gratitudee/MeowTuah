@@ -1,6 +1,6 @@
-local UI = require("../core/UI")
-local SaveManager = require("../core/SaveManager")
-local ThemeManager = require("../core/ThemeManager")
+local UI = MeowTuah.Modules.UI
+local SaveManager = MeowTuah.Modules.SaveManager
+local ThemeManager = MeowTuah.Modules.ThemeManager
 
 local Game = {
 	GameName = "TEMPLATE",

@@ -64,6 +64,8 @@ function MeowTuah:Initialise()
 
 	MeowTuah.Modules.UI = MeowTuah:LoadModule("core/UI.lua")
 	MeowTuah.Modules.Utility = MeowTuah:LoadModule("core/Utility.lua")
+	MeowTuah.Modules.ThemeManager = MeowTuah:LoadModule("core/ThemeManager.lua")
+	MeowTuah.Modules.SaveManager = MeowTuah:LoadModule("core/SaveManager.lua")
 
 	if not GameName then
 		GameName = "Universal"
