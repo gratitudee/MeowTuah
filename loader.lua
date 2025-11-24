@@ -40,6 +40,7 @@ function MeowTuah:LoadModule(ModulePath)
 		return nil
 	end
 
+	print(Success, Result)
 	return Result
 end
 
