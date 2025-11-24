@@ -23,11 +23,18 @@ function Game:CreateUI()
 	})
 
 	local SettingsTab = Window:AddTab("Settings")
-	local LeftGroupBox = SettingsTab:AddLeftGroupbox("Groupbox")
+	local LeftGroupBox = SettingsTab:AddLeftGroupbox("Menu Interaction")
 
 	LeftGroupBox:AddLabel("Menu Bind")
 		:AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu Keybind" })
 	Library.ToggleKeybind = Options.MenuKeybind
+
+	LeftGroupBox:AddButton("Unload", function()
+		MeowTuah:Unload()
+		UI:Unload()
+	end)
+
+	UI:OnUnload(function() end)
 
 	ThemeManager:SetLibrary(UI)
 	ThemeManager:SetFolder(`MeowTuah/{Game.GameName}`)

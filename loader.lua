@@ -7,7 +7,6 @@ local MeowTuah = {
 	Modules = {},
 }
 
-getgenv().MeowTuah = MeowTuah
 MeowTuah.Repo = "https://raw.githubusercontent.com/gratitudee/MeowTuah/main/"
 
 -- Utils
@@ -76,6 +75,7 @@ function MeowTuah:Initialise()
 	if GameModule then
 		GameModule:Initialise()
 		MeowTuah.CurrentGame = GameName
+		getgenv().MeowTuah = MeowTuah
 		getgenv().MeowTuahLoaded = true
 		return
 	end
