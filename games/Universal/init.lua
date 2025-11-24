@@ -9,7 +9,9 @@ local Game = {
 	Options = {},
 }
 
-function Game:Initialise() end
+function Game:Initialise()
+	Game:CreateUI()
+end
 
 function Game:CreateUI()
 	local Window = UI:CreateWindow({
