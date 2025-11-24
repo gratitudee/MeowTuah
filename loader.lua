@@ -7,6 +7,7 @@ local MeowTuah = {
 	Modules = {},
 }
 
+getgenv().MeowTuah = MeowTuah
 MeowTuah.Repo = "https://raw.githubusercontent.com/gratitudee/MeowTuah/main/"
 
 -- Utils
