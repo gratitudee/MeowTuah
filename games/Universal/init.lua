@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 local UI = MeowTuah.Modules.UI
 local SaveManager = MeowTuah.Modules.SaveManager
 local ThemeManager = MeowTuah.Modules.ThemeManager
 
+=======
+>>>>>>> e377b65a235665a9b8508a6156f3d826376e0671
 local Game = {
 	GameName = "TEMPLATE",
 	Features = {},
