@@ -26,7 +26,7 @@ function MeowTuah:SafeCall(identifier, func, ...)
 	if not success then
 		MeowTuah:Print(`{identifier} Failed: {result}`, "WARNING")
 	end
-	return success and result
+	return success, result
 end
 
 function MeowTuah:LoadModule(ModulePath)
