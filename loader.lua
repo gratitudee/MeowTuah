@@ -8,7 +8,7 @@ local MeowTuah = {
 }
 
 getgenv().MeowTuah = MeowTuah
-MeowTuah.Repo = "https://raw.githubusercontent.com/gratitudee/meow-tuah/main/"
+MeowTuah.Repo = "https://raw.githubusercontent.com/gratitudee/MeowTuah/main/"
 
 -- Utils
 function MeowTuah:Print(Message, Level)
