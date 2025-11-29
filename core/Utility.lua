@@ -39,7 +39,7 @@ Utils.FindFirstChildWhichIsA = Utils.index(game, "FindFirstChildWhichIsA")
 Utils.WaitForChild = Utils.index(game, "WaitForChild")
 Utils.GetMarkerReachedSignal = Utils.index(ghosttrack, "GetMarkerReachedSignal")
 
-function Utils.GetService(service: string): Instance
+function Utils.GetService(service: string)
 	local result = Utils._GetService(game, service)
 	return cloneref and cloneref(result) or result
 end
@@ -72,7 +72,7 @@ function Utils.CreateSignal()
 	return signal
 end
 
-function Utils.generateUniqueColor(filterName: string?): Color3
+function Utils.generateUniqueColor(filterName)
 	if filterName and colorCache[filterName] then
 		return colorCache[filterName]
 	end
@@ -125,7 +125,7 @@ function Utils.generateUniqueColor(filterName: string?): Color3
 end
 
 -- Player utilities
-function Utils.GetPlayer(): Player?
+function Utils.GetPlayer()
 	local success, result = pcall(function()
 		return Utils.GetService("Players")
 	end)
@@ -133,7 +133,7 @@ function Utils.GetPlayer(): Player?
 	return success and Utils.index(result, "LocalPlayer")
 end
 
-function Utils.GetCharacter(player: Player?): Model?
+function Utils.GetCharacter(player)
 	local success, result = pcall(function()
 		return player and Utils.index(player, "Character")
 	end)
@@ -141,36 +141,13 @@ function Utils.GetCharacter(player: Player?): Model?
 	return success and result
 end
 
-function Utils.GetHumanoid(player: Player?): Humanoid?
+function Utils.GetHumanoid(player)
 	local success, result = pcall(function()
 		local character = Utils.GetCharacter(player)
 		return character and Utils.FindFirstChildOfClass(character, "Humanoid")
 	end)
 
 	return success and result
-end
-
--- Function management
-function Utils.BlankFunction(tbl: { [any]: any }, method: string, override: (...any) -> any, value: boolean)
-	assert(typeof(tbl) == "table", "First argument must be a table")
-	assert(typeof(method) == "string", "Second argument must be the method name")
-
-	if value == false then
-		if not toggledFunctions[tbl] then
-			toggledFunctions[tbl] = {}
-		end
-
-		if not toggledFunctions[tbl][method] then
-			toggledFunctions[tbl][method] = tbl[method]
-		end
-
-		tbl[method] = override
-	else
-		if toggledFunctions[tbl] and toggledFunctions[tbl][method] then
-			tbl[method] = toggledFunctions[tbl][method]
-			toggledFunctions[tbl][method] = nil
-		end
-	end
 end
 
 return Utils
