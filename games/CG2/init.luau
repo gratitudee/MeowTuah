@@ -99,10 +99,6 @@ return function(self)
 	-- Callback Stuff
 
 	-- Auto Parry Callbacks
-	for key, value in pairs(Options) do
-		print(key, value)
-	end
-
 	Options.AutoParryKeyPicker:OnClick(function(Value)
 		AutoParry.Enabled = Value
 	end)
