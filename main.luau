@@ -35,17 +35,17 @@ return function(Override)
 	if Override then
 		print("Ran With Override")
 		for _, module in pairs(games) do
-			if game.Name == Override then
-				return module:Load()
+			if module.Name == Override then
+				return module.Load(module)
 			end
 		end
 	end
 
 	for _, module in pairs(games) do
 		if module.UniverseId and module.UniverseId == game.GameId then
-			return module:Load()
+			return module.Load(module)
 		end
 	end
 
-	return games[1]:Load()
+	return games[1].Load(games[1])
 end
