@@ -33,6 +33,7 @@ return function(self)
 		AutoParry:Stop()
 		Movement:Stop()
 		Visuals:Stop()
+		Library.Unloaded = true
 	end)
 
 	local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu")
