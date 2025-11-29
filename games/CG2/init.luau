@@ -17,7 +17,8 @@ return function(self)
 
 	local Tabs = {
 		["Auto Parry"] = MainWindow:AddTab("Auto Parry"),
-		["Player ESP"] = MainWindow:AddTab("Visuals"),
+		["Player ESP"] = MainWindow:AddTab("Player ESP"),
+		["Trinkets"] = MainWindow:AddTab("Trinkets"),
 		["Movement"] = MainWindow:AddTab("Movement"),
 		["Settings"] = MainWindow:AddTab("Settings"),
 	}
@@ -42,12 +43,62 @@ return function(self)
 	})
 
 	-- Visual Stuff
-	local VisualsLeftGroup = Tabs["Player ESP"]:AddLeftGroupbox("Visuals | Players")
-	local VisualsRightGroup = Tabs["Player ESP"]:AddRightGroupbox("Trinkets")
+	local VisualsLeftGroup = Tabs["Player ESP"]:AddLeftGroupbox("Visuals")
+
+	-- Trinket Stuff
+	local TrinketsLeftGroup = Tabs["Trinkets"]:AddLeftGroupbox("Trinket | ESP")
+	local TrinketsRightGroup = Tabs["Trinkets"]:AddRightGroupbox("Trinket | Auto Grab")
+
+	TrinketsLeftGroup:AddToggle("TrinketESPEnabled", {
+		Text = "Enabled",
+		Default = false,
+		Tooltip = "Enables Trinket ESP",
+	})
+
+	TrinketsLeftGroup:AddSlider("TrinketESPMaxDistance", {
+		Text = "Trinket ESP Max Distance",
+		Default = 1000,
+		Min = 1,
+		Max = 1500,
+		Rounding = 1,
+		Compact = false,
+	})
+
+	TrinketsLeftGroup:AddToggle("TrinketNameEnabled", {
+		Text = "Name",
+		Default = false,
+		Tooltip = "Enables Trinket Name ESP",
+	}):AddColorPicker("TrinketNameColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Name Color",
+		Transparency = 0,
+	})
+
+	TrinketsLeftGroup:AddToggle("TrinketDistanceEnabled", {
+		Text = "Distance",
+		Default = false,
+		Tooltip = "Enables Trinket Distance ESP",
+	}):AddColorPicker("TrinketDistanceColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Distance Color",
+		Transparency = 0,
+	})
+
+	TrinketsLeftGroup:AddToggle("TrinketValueEnabled", {
+		Text = "Value",
+		Default = false,
+		Tooltip = "Enables Trinket Value ESP",
+	}):AddColorPicker("TrinketValueColor", {
+		Default = Color3.new(0, 1, 0),
+		Title = "Value Color",
+		Transparency = 0,
+	})
 
 	-- Movement Stuff
 
 	-- Callback Stuff
+
+	-- Auto Parry Callbacks
 	Options.AutoParryKeyPicker:OnClick(function(Value)
 		AutoParry.Enabled = Value
 	end)
@@ -67,6 +118,46 @@ return function(self)
 		AutoParry.MaxDistance = Options.AutoParryMaxDistance.Value
 	end)
 
+	-- Visual Callbacks
+
+	-- Trinket Callbacks
+	Options.TrinketESPEnabled:OnChanged(function()
+		Trinket.ESP.Enabled = Options.TrinketESPEnabled.Value
+	end)
+
+	Options.TrinketESPMaxDistance:OnChanged(function()
+		Trinket.ESP.MaxDistance = Options.TrinketESPMaxDistance.Value
+	end)
+
+	Options.TrinketNameEnabled:OnChanged(function()
+		Trinket.ESP.Name.Enabled = Options.TrinketNameEnabled.Value
+	end)
+
+	Options.TrinketDistanceEnabled:OnChanged(function()
+		Trinket.ESP.Name.Enabled = Options.TrinketDistanceEnabled.Value
+	end)
+
+	Options.TrinketValueEnabled:OnChanged(function()
+		Trinket.ESP.Name.Enabled = Options.TrinketValueEnabled.Value
+	end)
+
+	Options.TrinketNameColor:OnChanged(function()
+		Trinket.ESP.Name.Color = Options.TrinketNameColor.Value
+		Trinket.ESP.Name.Transparency = Options.TrinketNameColor.Transparency
+	end)
+
+	Options.TrinketDistanceColor:OnChanged(function()
+		Trinket.ESP.Distance.Color = Options.TrinketDistanceColor.Value
+		Trinket.ESP.Distance.Transparency = Options.TrinketDistanceColor.Transparency
+	end)
+
+	Options.TrinketValueColor:OnChanged(function()
+		Trinket.ESP.Value.Color = Options.TrinketValueColor.Value
+		Trinket.ESP.Value.Transparency = Options.TrinketValueColor.Transparency
+	end)
+
+	-- Movement Callbacks
+
 	-- Settings Stuff
 	Library.KeybindFrame.Visible = true
 	Library:OnUnload(function()
@@ -81,7 +172,7 @@ return function(self)
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
-	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "End", NoUI = true, Text = "Menu keybind" })
+	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
 	Library.ToggleKeybind = Options.MenuKeybind
 
 	-- M A N A G E R S . . .
