@@ -1,6 +1,9 @@
 local Base = "games/CG2/Features"
-local AutoParry, Movement, Visuals =
-	LoadModule(`{Base}/AutoParry.luau`), LoadModule(`{Base}/Movement.luau`), LoadModule(`{Base}/Visuals.luau`)
+local AutoParry, Movement, PlayerESP, Trinket =
+	LoadModule(`{Base}/AutoParry.luau`),
+	LoadModule(`{Base}/Movement.luau`),
+	LoadModule(`{Base}/PlayerESP.luau`),
+	LoadModule(`{Base}/Trinket.luau`)
 
 return function(self)
 	local Library, SaveManager, ThemeManager = MeowTuah.Library, MeowTuah.SaveManager, MeowTuah.ThemeManager
@@ -13,14 +16,14 @@ return function(self)
 	})
 
 	local Tabs = {
-		["AutoParry"] = MainWindow:AddTab("Auto Parry"),
-		["Visuals"] = MainWindow:AddTab("Visuals"),
+		["Auto Parry"] = MainWindow:AddTab("Auto Parry"),
+		["Player ESP"] = MainWindow:AddTab("Visuals"),
 		["Movement"] = MainWindow:AddTab("Movement"),
 		["Settings"] = MainWindow:AddTab("Settings"),
 	}
 
 	-- Auto Parry Stuff
-	local AutoParryLeftGroup = Tabs.AutoParry:AddLeftGroupbox("Auto Parry Main")
+	local AutoParryLeftGroup = Tabs["Auto Parry"]:AddLeftGroupbox("Auto Parry Main")
 	AutoParryLeftGroup:AddLabel("Enable Auto Parry"):AddKeyPicker("AutoParryKeyPicker", {
 		Default = "E",
 		SyncToggleState = false,
@@ -39,8 +42,8 @@ return function(self)
 	})
 
 	-- Visual Stuff
-	local VisualsLeftGroup = Tabs.Visuals:AddLeftGroupbox("Visuals | Players")
-	local VisualsRightGroup = Tabs.Visuals:AddLeftGroupbox("Trinkets")
+	local VisualsLeftGroup = Tabs["Player ESP"]:AddLeftGroupbox("Visuals | Players")
+	local VisualsRightGroup = Tabs["Player ESP"]:AddRightGroupbox("Trinkets")
 
 	-- Movement Stuff
 
@@ -69,7 +72,8 @@ return function(self)
 	Library:OnUnload(function()
 		AutoParry:Stop()
 		Movement:Stop()
-		Visuals:Stop()
+		PlayerESP:Stop()
+		Trinket:Stop()
 		Library.Unloaded = true
 	end)
 
