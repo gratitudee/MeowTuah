@@ -20,12 +20,49 @@ return function(self)
 	}
 
 	-- Auto Parry Stuff
+	local AutoParryLeftGroup = Tabs.AutoParry:AddLeftGroupbox("Auto Parry Main")
+	AutoParryLeftGroup:AddLabel("Enable Auto Parry"):AddKeyPicker("AutoParryKeyPicker", {
+		Default = "E",
+		SyncToggleState = false,
+		Mode = "Toggle",
+		Text = "Auto Parry",
+		NoUI = false,
+	})
+
+	AutoParryLeftGroup:AddSlider("AutoParryMaxDistance", {
+		Text = "Auto Parry Max Distance",
+		Default = 10,
+		Min = 1,
+		Max = 25,
+		Rounding = 1,
+		Compact = false,
+	})
 
 	-- Visual Stuff
+	local VisualsLeftGroup = Tabs.Visuals:AddLeftGroupbox("Visuals | Players")
+	local VisualsRightGroup = Tabs.Visuals:AddLeftGroupbox("Trinkets")
 
 	-- Movement Stuff
 
 	-- Callback Stuff
+	Options.AutoParryKeyPicker:OnClick(function(Value)
+		AutoParry.Enabled = Value
+	end)
+
+	task.spawn(function()
+		while true do
+			task.wait(0.1)
+			AutoParry.Enabled = Options.AutoParryKeyPicker:GetState()
+
+			if Library.Unloaded then
+				break
+			end
+		end
+	end)
+
+	Options.AutoParryMaxDistance:OnChanged(function()
+		AutoParry.MaxDistance = Options.AutoParryMaxDistance.Value
+	end)
 
 	-- Settings Stuff
 	Library.KeybindFrame.Visible = true

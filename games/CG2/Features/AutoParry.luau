@@ -1,4 +1,7 @@
-local AutoParry = {}
+local AutoParry = {
+	Enabled = false,
+	MaxDistance = 10,
+}
 
 -- Feature Logic
 

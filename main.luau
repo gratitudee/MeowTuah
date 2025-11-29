@@ -26,7 +26,6 @@ local games = {
 }
 
 return function(Override)
-	print(Override)
 	getgenv().MeowTuah = {
 		Library = LoadModule("packages/UI.lua"),
 		SaveManager = LoadModule("packages/SaveManager.lua"),
@@ -36,7 +35,6 @@ return function(Override)
 	}
 
 	if Override then
-		print("Ran With Override")
 		for _, module in pairs(games) do
 			if module.Name == Override then
 				return module.Load(module)
