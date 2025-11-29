@@ -46,16 +46,17 @@ return function(self)
 	local VisualsLeftGroup = Tabs["Player ESP"]:AddLeftGroupbox("Visuals")
 
 	-- Trinket Stuff
-	local TrinketsLeftGroup = Tabs["Trinkets"]:AddLeftGroupbox("Trinket | ESP")
-	local TrinketsRightGroup = Tabs["Trinkets"]:AddRightGroupbox("Trinket | Auto Grab")
+	local TrinketTabBox = Tabs["Trinkets"]:AddLeftTabbox()
+	local TrinketVisualsTab = TrinketTabBox:AddTab("Visuals")
+	local TrinketAutograbTab = TrinketTabBox:AddTab("Auto Grab")
 
-	TrinketsLeftGroup:AddToggle("TrinketESPEnabled", {
-		Text = "Trinket ESP Enabled",
+	TrinketVisualsTab:AddToggle("TrinketESPEnabled", {
+		Text = "Enable",
 		Default = false,
 		Tooltip = "Enables Trinket ESP",
 	})
 
-	TrinketsLeftGroup:AddSlider("TrinketESPMaxDistance", {
+	TrinketVisualsTab:AddSlider("TrinketESPMaxDistance", {
 		Text = "Trinket ESP Max Distance",
 		Default = 1000,
 		Min = 1,
@@ -64,7 +65,7 @@ return function(self)
 		Compact = false,
 	})
 
-	TrinketsLeftGroup:AddToggle("TrinketNameEnabled", {
+	TrinketVisualsTab:AddToggle("TrinketNameEnabled", {
 		Text = "Name",
 		Default = false,
 		Tooltip = "Enables Trinket Name ESP",
@@ -74,7 +75,7 @@ return function(self)
 		Transparency = 0,
 	})
 
-	TrinketsLeftGroup:AddToggle("TrinketDistanceEnabled", {
+	TrinketVisualsTab:AddToggle("TrinketDistanceEnabled", {
 		Text = "Distance",
 		Default = false,
 		Tooltip = "Enables Trinket Distance ESP",
@@ -84,7 +85,7 @@ return function(self)
 		Transparency = 0,
 	})
 
-	TrinketsLeftGroup:AddToggle("TrinketValueEnabled", {
+	TrinketVisualsTab:AddToggle("TrinketValueEnabled", {
 		Text = "Value",
 		Default = false,
 		Tooltip = "Enables Trinket Value ESP",
@@ -92,6 +93,12 @@ return function(self)
 		Default = Color3.new(0, 1, 0),
 		Title = "Value Color",
 		Transparency = 0,
+	})
+
+	TrinketAutograbTab:AddToggle("TrinketAutograbEnabled", {
+		Text = "Enable",
+		Default = false,
+		Tooltip = "Enables Trinket Auto Grabbing.",
 	})
 
 	-- Movement Stuff
@@ -139,6 +146,10 @@ return function(self)
 
 	Toggles.TrinketValueEnabled:OnChanged(function()
 		Trinket.ESP.Value.Enabled = Toggles.TrinketValueEnabled.Value
+	end)
+
+	Toggles.TrinketAutograbEnabled:OnChanged(function()
+		Trinket.AutoGrab.Enabled = Toggles.TrinketAutograbEnabled.Value
 	end)
 
 	Options.TrinketNameColor:OnChanged(function()

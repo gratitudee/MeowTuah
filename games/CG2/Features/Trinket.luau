@@ -21,6 +21,10 @@ local Trinket = {
 			Transparency = 0,
 		},
 	},
+
+	AutoGrab = {
+		Enabled = false,
+	},
 }
 
 function Trinket:Start() end
