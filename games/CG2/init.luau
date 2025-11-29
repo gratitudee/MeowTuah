@@ -99,6 +99,10 @@ return function(self)
 	-- Callback Stuff
 
 	-- Auto Parry Callbacks
+	for key, value in pairs(Options) do
+		print(key, value)
+	end
+
 	Options.AutoParryKeyPicker:OnClick(function(Value)
 		AutoParry.Enabled = Value
 	end)
@@ -134,11 +138,11 @@ return function(self)
 	end)
 
 	Options.TrinketDistanceEnabled:OnChanged(function()
-		Trinket.ESP.Name.Enabled = Options.TrinketDistanceEnabled.Value
+		Trinket.ESP.Distance.Enabled = Options.TrinketDistanceEnabled.Value
 	end)
 
 	Options.TrinketValueEnabled:OnChanged(function()
-		Trinket.ESP.Name.Enabled = Options.TrinketValueEnabled.Value
+		Trinket.ESP.Value.Enabled = Options.TrinketValueEnabled.Value
 	end)
 
 	Options.TrinketNameColor:OnChanged(function()
