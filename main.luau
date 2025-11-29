@@ -31,6 +31,8 @@ return function(Override)
 		Library = LoadModule("packages/UI.lua"),
 		SaveManager = LoadModule("packages/SaveManager.lua"),
 		ThemeManager = LoadModule("packages/ThemeManager.lua"),
+		Utility = LoadModule("core/Utility.lua"),
+		Services = LoadModule("core/Services.lua"),
 	}
 
 	if Override then
