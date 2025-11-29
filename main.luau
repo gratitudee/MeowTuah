@@ -3,7 +3,7 @@ local Repo = "https://raw.githubusercontent.com/gratitudee/MeowTuah/main/"
 getgenv().LoadModule = function(ModulePath)
 	local URL = Repo .. ModulePath
 	local Success, Result = pcall(function(...)
-		return loadstring(game:HttpGet(URL, true))
+		return loadstring(game:HttpGet(URL, true))()
 	end)
 
 	if not Success then
@@ -17,15 +17,21 @@ end
 local games = {
 	{
 		Name = "Universal",
-		Load = LoadModule("games/Universal/file.luau"),
+		Load = LoadModule("games/Universal/init.luau"),
 	},
 	{
 		Name = "Cult Game 2",
-		Load = LoadModule("games/CG2/file.luau"),
+		Load = LoadModule("games/CG2/init.luau"),
 	},
 }
 
 return function(Override)
+	getgenv().MeowTuah = {
+		Library = LoadModule("packages/UI.lua"),
+		SaveManager = LoadModule("packages/SaveManager.lua"),
+		ThemeManager = LoadModule("packages/ThemeManager.lua"),
+	}
+
 	if Override then
 		for _, module in pairs(games) do
 			if game.Name == Override then

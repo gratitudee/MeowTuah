@@ -1,0 +1,3 @@
+local Visuals = {}
+
+return Visuals
