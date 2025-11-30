@@ -107,7 +107,7 @@ return function(self)
 	})
 
 	-- Trinket Stuff
-	print("this has updated")
+	print("this has updated again!")
 	local TrinketTabBox = Tabs["Visuals"]:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
@@ -237,8 +237,8 @@ return function(self)
 	end)
 
 	Options.PlayerBountyColor:OnChanged(function()
-		Player.Bounty.Color = Options.PlayerBountyColor.Value
-		Player.Bounty.Transparency = Options.PlayerBountyColor.Transparency
+		PlayerESP.Bounty.Color = Options.PlayerBountyColor.Value
+		PlayerESP.Bounty.Transparency = Options.PlayerBountyColor.Transparency
 	end)
 
 	-- Trinket Callbacks
