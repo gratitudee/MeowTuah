@@ -11,9 +11,7 @@ return function(self)
 		Title = `{self.Name} | MEOW TUAH`,
 		Center = true,
 		AutoShow = true,
-		TabPadding = 8,
 		MenuFadeTime = 0.2,
-		Size = UDim2.fromOffset(450, 550),
 	})
 
 	local Tabs = {
@@ -108,7 +106,6 @@ return function(self)
 	})
 
 	-- Trinket Stuff
-	print("this has updated again!")
 	local TrinketTabBox = Tabs["Visuals"]:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
