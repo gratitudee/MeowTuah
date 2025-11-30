@@ -160,8 +160,8 @@ return function(self)
 	})
 
 	-- Movement Stuff
-	local MovementLeftGroupBox = Tabs.Main:AddLeftGroupbox("Movement")
-	MovementLeftGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
+	local MovementRightGroupBox = Tabs.Main:AddRightGroupbox("Movement")
+	MovementRightGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
 		Default = "G",
 		SyncToggleState = false,
 		Mode = "Hold",
