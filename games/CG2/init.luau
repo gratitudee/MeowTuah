@@ -67,7 +67,7 @@ return function(self)
 	}):AddColorPicker("PlayerFilledBoxColor", {
 		Default = Color3.new(1, 1, 1),
 		Title = "Filled Box Color",
-		Transparency = 0,
+		Transparency = 0.85,
 	})
 
 	VisualsLeftGroup:AddToggle("PlayerNameEnabled", {
@@ -107,7 +107,7 @@ return function(self)
 	})
 
 	-- Trinket Stuff
-	local TrinketTabBox = Tabs["Trinkets"]:AddRightTabbox()
+	local TrinketTabBox = Tabs["Visuals"]:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
 
