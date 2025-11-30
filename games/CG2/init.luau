@@ -17,8 +17,7 @@ return function(self)
 
 	local Tabs = {
 		["Auto Parry"] = MainWindow:AddTab("Auto Parry"),
-		["Player ESP"] = MainWindow:AddTab("Player ESP"),
-		["Trinkets"] = MainWindow:AddTab("Trinkets"),
+		["Visuals"] = MainWindow:AddTab("Visuals"),
 		["Movement"] = MainWindow:AddTab("Movement"),
 		["Settings"] = MainWindow:AddTab("Settings"),
 	}
@@ -43,12 +42,74 @@ return function(self)
 	})
 
 	-- Visual Stuff
-	local VisualsLeftGroup = Tabs["Player ESP"]:AddLeftGroupbox("Visuals")
+	local VisualsLeftGroup = Tabs["Visuals"]:AddLeftGroupbox("Player Visuals")
+
+	VisualsLeftGroup:AddToggle("PlayerESPEnabled", {
+		Text = "Enable",
+		Default = false,
+		Tooltip = "Master Switch For The Player ESP.",
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerBoxEnabled", {
+		Text = "Box",
+		Default = false,
+		Tooltip = "Enables Player Box ESP",
+	}):AddColorPicker("PlayerBoxColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Box Color",
+		Transparency = 0,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerFilledBoxEnabled", {
+		Text = "FilledBox",
+		Default = false,
+		Tooltip = "Enables Player Filled Box ESP",
+	}):AddColorPicker("PlayerFilledBoxColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Filled Box Color",
+		Transparency = 0,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerNameEnabled", {
+		Text = "Name",
+		Default = false,
+		Tooltip = "Enables Player Name ESP",
+	}):AddColorPicker("PlayerNameColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Name Color",
+		Transparency = 0,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerDistanceEnabled", {
+		Text = "Distance",
+		Default = false,
+		Tooltip = "Enables Player Distance ESP",
+	}):AddColorPicker("PlayerDistanceColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Distance Color",
+		Transparency = 0,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerHealthEnabled", {
+		Text = "Health",
+		Default = false,
+		Tooltip = "Enables Player Health Bar ESP",
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerBountyEnabled", {
+		Text = "Bounty",
+		Default = false,
+		Tooltip = "Enables Player Bounty ESP",
+	}):AddColorPicker("PlayerBountyColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Bounty Color",
+		Transparency = 0,
+	})
 
 	-- Trinket Stuff
-	local TrinketTabBox = Tabs["Trinkets"]:AddLeftTabbox()
-	local TrinketVisualsTab = TrinketTabBox:AddTab("Visuals")
-	local TrinketAutograbTab = TrinketTabBox:AddTab("Auto Grab")
+	local TrinketTabBox = Tabs["Trinkets"]:AddRightTabbox()
+	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
+	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
 
 	TrinketVisualsTab:AddToggle("TrinketESPEnabled", {
 		Text = "Enable",
@@ -126,6 +187,58 @@ return function(self)
 	end)
 
 	-- Visual Callbacks
+	Toggles.PlayerESPEnabled:OnChanged(function()
+		PlayerESP.Enabled = Toggles.PlayerESPEnabled.Value
+	end)
+
+	Toggles.PlayerBoxEnabled:OnChanged(function()
+		PlayerESP.Box.Enabled = Toggles.PlayerBoxEnabled.Value
+	end)
+
+	Options.PlayerBoxColor:OnChanged(function()
+		PlayerESP.Box.Color = Options.PlayerBoxColor.Value
+		PlayerESP.Box.Transparency = Options.PlayerBoxColor.Transparency
+	end)
+
+	Toggles.PlayerFilledBoxEnabled:OnChanged(function()
+		PlayerESP.FilledBox.Enabled = Toggles.PlayerFilledBoxEnabled.Value
+	end)
+
+	Options.PlayerFilledBoxColor:OnChanged(function()
+		PlayerESP.FilledBox.Color = Options.PlayerFilledBoxColor.Value
+		PlayerESP.FilledBox.Transparency = Options.PlayerFilledBoxColor.Transparency
+	end)
+
+	Toggles.PlayerNameEnabled:OnChanged(function()
+		PlayerESP.Name.Enabled = Toggles.PlayerNameEnabled.Value
+	end)
+
+	Options.PlayerNameColor:OnChanged(function()
+		PlayerESP.Name.Color = Options.PlayerNameColor.Value
+		PlayerESP.Name.Transparency = Options.PlayerNameColor.Transparency
+	end)
+
+	Toggles.PlayerDistanceEnabled:OnChanged(function()
+		PlayerESP.Distance.Enabled = Toggles.PlayerDistanceEnabled.Value
+	end)
+
+	Options.PlayerDistanceColor:OnChanged(function()
+		PlayerESP.Distance.Color = Options.PlayerDistanceColor.Value
+		PlayerESP.Distance.Transparency = Options.PlayerDistanceColor.Transparency
+	end)
+
+	Toggles.PlayerHealthEnabled:OnChanged(function()
+		PlayerESP.Health.Enabled = Toggles.PlayerHealthEnabled.Value
+	end)
+
+	Toggles.PlayerBountyEnabled:OnChanged(function()
+		PlayerESP.Bounty.Enabled = Toggles.PlayerBountyEnabled.Value
+	end)
+
+	Options.PlayerBountyColor:OnChanged(function()
+		Player.Bounty.Color = Options.PlayerBountyColor.Value
+		Player.Bounty.Transparency = Options.PlayerBountyColor.Transparency
+	end)
 
 	-- Trinket Callbacks
 	Toggles.TrinketESPEnabled:OnChanged(function()
