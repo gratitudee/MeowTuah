@@ -107,6 +107,7 @@ return function(self)
 	})
 
 	-- Trinket Stuff
+	print("this has updated")
 	local TrinketTabBox = Tabs["Visuals"]:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
