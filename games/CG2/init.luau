@@ -13,6 +13,7 @@ return function(self)
 		AutoShow = true,
 		TabPadding = 8,
 		MenuFadeTime = 0.2,
+		Size = UDim2.fromOffset(450, 550),
 	})
 
 	local Tabs = {
