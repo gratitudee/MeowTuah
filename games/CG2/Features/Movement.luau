@@ -1,4 +1,8 @@
-local Movement = {}
+local Movement = {
+	AutoSlide = {
+		Enabled = false,
+	},
+}
 
 function Movement:Start() end
 

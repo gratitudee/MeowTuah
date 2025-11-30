@@ -162,6 +162,14 @@ return function(self)
 	})
 
 	-- Movement Stuff
+	local MovementLeftGroupBox = Tabs.Movement:AddLeftGroupbox()
+	MovementLeftGroupBox:AddKeyPicker("AutoSlideKeyPicker", {
+		Default = "G",
+		SyncToggleState = false,
+		Mode = "Hold",
+		Text = "Auto Slide",
+		NoUI = false,
+	})
 
 	-- Callback Stuff
 
@@ -280,6 +288,20 @@ return function(self)
 	end)
 
 	-- Movement Callbacks
+	Options.AutoSlideKeyPicker:OnClick(function(Value)
+		Movement.AutoSlideKeyPicker.Enabled = Value
+	end)
+
+	task.spawn(function()
+		while true do
+			task.wait(0.1)
+			Movement.AutoSlide.Enabled = Options.AutoSlideKeyPicker:GetState()
+
+			if Library.Unloaded then
+				break
+			end
+		end
+	end)
 
 	-- Settings Stuff
 	Library.KeybindFrame.Visible = true
