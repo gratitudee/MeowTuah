@@ -163,7 +163,7 @@ return function(self)
 
 	-- Movement Stuff
 	local MovementLeftGroupBox = Tabs.Movement:AddLeftGroupbox("Main")
-	MovementLeftGroupBox:AddKeyPicker("AutoSlideKeyPicker", {
+	MovementLeftGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
 		Default = "G",
 		SyncToggleState = false,
 		Mode = "Hold",
@@ -172,7 +172,6 @@ return function(self)
 	})
 
 	-- Callback Stuff
-
 	-- Auto Parry Callbacks
 	Options.AutoParryKeyPicker:OnClick(function(Value)
 		AutoParry.Enabled = Value
