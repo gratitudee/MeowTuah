@@ -15,14 +15,12 @@ return function(self)
 	})
 
 	local Tabs = {
-		["Auto Parry"] = MainWindow:AddTab("Auto Parry"),
-		["Visuals"] = MainWindow:AddTab("Visuals"),
-		["Movement"] = MainWindow:AddTab("Movement"),
+		["Main"] = MainWindow:AddTab("Main"),
 		["Settings"] = MainWindow:AddTab("Settings"),
 	}
 
 	-- Auto Parry Stuff
-	local AutoParryLeftGroup = Tabs["Auto Parry"]:AddLeftGroupbox("Auto Parry Main")
+	local AutoParryLeftGroup = Tabs["Main"]:AddLeftGroupbox("Auto Parry Main")
 	AutoParryLeftGroup:AddLabel("Enable Auto Parry"):AddKeyPicker("AutoParryKeyPicker", {
 		Default = "E",
 		SyncToggleState = false,
@@ -41,7 +39,7 @@ return function(self)
 	})
 
 	-- Visual Stuff
-	local VisualsLeftGroup = Tabs["Visuals"]:AddLeftGroupbox("Player Visuals")
+	local VisualsLeftGroup = Tabs["Main"]:AddLeftGroupbox("Player Visuals")
 
 	VisualsLeftGroup:AddToggle("PlayerESPEnabled", {
 		Text = "Enable",
@@ -106,7 +104,7 @@ return function(self)
 	})
 
 	-- Trinket Stuff
-	local TrinketTabBox = Tabs["Visuals"]:AddRightTabbox()
+	local TrinketTabBox = Tabs["Main"]:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
 
@@ -162,7 +160,7 @@ return function(self)
 	})
 
 	-- Movement Stuff
-	local MovementLeftGroupBox = Tabs.Movement:AddLeftGroupbox("Main")
+	local MovementLeftGroupBox = Tabs.Main:AddLeftGroupbox("Movement")
 	MovementLeftGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
 		Default = "G",
 		SyncToggleState = false,
