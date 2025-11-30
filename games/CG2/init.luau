@@ -58,7 +58,7 @@ return function(self)
 	})
 
 	VisualsLeftGroup:AddToggle("PlayerFilledBoxEnabled", {
-		Text = "FilledBox",
+		Text = "Filled Box",
 		Default = false,
 		Tooltip = "Enables Player Filled Box ESP",
 	}):AddColorPicker("PlayerFilledBoxColor", {
@@ -301,7 +301,6 @@ return function(self)
 	end)
 
 	-- Settings Stuff
-	Library.KeybindFrame.Visible = true
 	Library:OnUnload(function()
 		AutoParry:Stop()
 		Movement:Stop()
@@ -314,6 +313,22 @@ return function(self)
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
+
+	MenuGroup:AddToggle("KeybindListToggle", {
+		Text = "Show Keybinds",
+		Default = false,
+		Tooltip = "Shows the keybind frame.",
+
+		Callback = function(Value)
+			Library.KeybindFrame.Visible = Value
+		end,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerESPEnabled", {
+		Text = "Enable",
+		Default = false,
+		Tooltip = "Master Switch For The Player ESP.",
+	})
 	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
 	Library.ToggleKeybind = Options.MenuKeybind
 
