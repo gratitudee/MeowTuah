@@ -214,7 +214,7 @@ function Trinket:InitESP()
 		local NameText = Drawing.new("Text")
 		NameText.Text = ""
 		NameText.Color = Trinket.ESP.Name.Color
-		NameText.Size = 12
+		NameText.Size = 16
 		NameText.Center = true
 		NameText.Outline = true
 		NameText.Visible = false
@@ -223,7 +223,7 @@ function Trinket:InitESP()
 		local DistanceText = Drawing.new("Text")
 		DistanceText.Text = ""
 		DistanceText.Color = Trinket.ESP.Distance.Color
-		DistanceText.Size = 12
+		DistanceText.Size = 16
 		DistanceText.Center = true
 		DistanceText.Outline = true
 		DistanceText.Visible = false
@@ -233,7 +233,7 @@ function Trinket:InitESP()
 		local ValueText = Drawing.new("Text")
 		ValueText.Text = ""
 		ValueText.Color = Trinket.ESP.Value.Color
-		ValueText.Size = 12
+		ValueText.Size = 16
 		ValueText.Center = true
 		ValueText.Outline = true
 		ValueText.Visible = false
