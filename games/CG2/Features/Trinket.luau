@@ -104,7 +104,7 @@ function Trinket:CacheTrinkets()
 
 		local AddedConnection = Utility.index(WorkspaceTrinket, "ChildAdded"):Connect(function(Child)
 			local NewClickDetector = FindFirstChildWhichIsA(WorkspaceTrinket, "ClickDetector", true)
-			local SharedTrinket = Trinket.Trinkets[Trinket]
+			local SharedTrinket = Trinket.Trinkets[WorkspaceTrinket]
 			SharedTrinket.IsActive = true
 			SharedTrinket.Name = Child.Name
 			SharedTrinket.Value = GetTrinketValue(Child.Name) or nil
@@ -113,7 +113,7 @@ function Trinket:CacheTrinkets()
 		end)
 
 		local RemovedConnection = Utility.index(WorkspaceTrinket, "ChildRemoved"):Connect(function(Child)
-			local SharedTrinket = Trinket.Trinkets[Trinket]
+			local SharedTrinket = Trinket.Trinkets[WorkspaceTrinket]
 			SharedTrinket.IsActive = false
 			SharedTrinket.Name = nil
 			SharedTrinket.Value = nil

@@ -259,6 +259,7 @@ return function(self)
 		PlayerESP.Bounty.Transparency = Options.PlayerBountyColor.Transparency
 	end)
 
+	print(Trinket.ESP)
 	-- Trinket Callbacks
 	Toggles.TrinketESPEnabled:OnChanged(function()
 		Trinket.ESP.Enabled = Toggles.TrinketESPEnabled.Value
