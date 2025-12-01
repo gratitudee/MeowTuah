@@ -49,6 +49,10 @@ local Trinket = {
 	},
 }
 
+local function GetTrinketValue(TrinketName)
+	return 0
+end
+
 function Trinket:HandleAutograb()
 	local HeartbeatConnection = Heartbeat:Connect(function()
 		if not Trinket.AutoGrab.Enabled then
