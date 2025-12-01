@@ -346,6 +346,19 @@ return function(self)
 		end,
 	})
 
+	Menu:AddDropdown("FontSelectionDropdown", {
+		Values = { "UI", "System", "Plex", "Monospace" },
+		Default = 1,
+		Multi = false,
+
+		Text = "Font Selection",
+		Tooltip = "The Font Text ESP Uses.",
+
+		Callback = function(Value)
+			Trinket.ESP.Font = Value
+		end,
+	})
+
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)

@@ -12,6 +12,13 @@ local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 local GetChildren = Utility.GetChildren
 local Trinkets = FindFirstChild(Workspace, "Trinkets") or FindFirstChild(Workspace, "TrinketSpawns")
 
+local DrawingFonts = {
+	UI = 0,
+	System = 1,
+	Plex = 2,
+	Monospace = 3,
+}
+
 local ValueMap = {
 	["Fork"] = 5,
 	["Blood Ruby"] = 10,
@@ -41,6 +48,7 @@ local Trinket = {
 	Drawings = {},
 	ESP = {
 		Enabled = false,
+		Font = "UI",
 		MaxDistance = 1000,
 
 		Name = {
