@@ -165,7 +165,7 @@ return function(self)
 		Tooltip = "Auto grab won't try to grab the item if the player isn't close enough to it.",
 	})
 
-	TrinketVisualsTab:AddSlider("TrinketAutograbMaxDistance", {
+	TrinketAutograbTab:AddSlider("TrinketAutograbMaxDistance", {
 		Text = "Max Distance",
 		Default = 10,
 		Min = 1,
