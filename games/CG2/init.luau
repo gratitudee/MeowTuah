@@ -159,7 +159,7 @@ return function(self)
 		Tooltip = "Enables Trinket Auto Grabbing.",
 	})
 
-	TrinketAutograbTab:AddToggle("TrinketAutograbRespectClickDetectorDitance", {
+	TrinketAutograbTab:AddToggle("AutograbRespectDistance", {
 		Text = "Respect Max Click Detector Distance",
 		Default = true,
 		Tooltip = "Auto grab won't try to grab the item if the player isn't close enough to it.",
@@ -282,6 +282,14 @@ return function(self)
 
 	Toggles.TrinketAutograbEnabled:OnChanged(function()
 		Trinket.AutoGrab.Enabled = Toggles.TrinketAutograbEnabled.Value
+	end)
+
+	Toggles.AutograbRespectDistance:OnChanged(function()
+		Trinket.AutoGrab.RespectClickDetectorDistance = Toggles.AutograbRespectDistance.Value
+	end)
+
+	Options.TrinketAutograbMaxDistance:OnChanged(function()
+		Trinket.AutoGrab.MaxDistance = Options.TrinketAutograbMaxDistance.Value
 	end)
 
 	Options.TrinketNameColor:OnChanged(function()

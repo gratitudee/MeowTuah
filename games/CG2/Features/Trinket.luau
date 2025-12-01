@@ -71,7 +71,14 @@ function Trinket:HandleAutograb()
 			end
 
 			local Distance = (HumanoidRootPart.Position - TrinketModel.Position).Magnitude
-			if Distance > Trinket.AutoGrab.MaxDistance or Distance > Data.ClickDetector.MaxActivationDistance then
+			if Distance > Trinket.AutoGrab.MaxDistance then
+				continue
+			end
+
+			if
+				Trinket.AutoGrab.RespectClickDetectorDistance
+				and Distance > Data.ClickDetector.MaxActivationDistance
+			then
 				continue
 			end
 
