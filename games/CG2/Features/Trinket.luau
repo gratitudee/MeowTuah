@@ -2,23 +2,43 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local Workspace = Services.Workspace
 local RunService = Services.RunService
-local CoreGui = Services.CoreGui
-local TextService = Utility.GetService("TextService")
 
 local Player = Utility.GetPlayer()
-local GetTextSize = Utility.index(TextService, "GetTextSize")
+local Camera = Utility.index(Workspace, "CurrentCamera")
+local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
 local Heartbeat = Utility.index(RunService, "Heartbeat")
 local FindFirstChild = Utility.FindFirstChild
-local FindFirstChildOfClass = Utility.FindFirstChildOfClass
 local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 local GetChildren = Utility.GetChildren
 local Trinkets = FindFirstChild(Workspace, "Trinkets") or FindFirstChild(Workspace, "TrinketSpawns")
+
+local ValueMap = {
+	["Fork"] = 5,
+	["Blood Ruby"] = 10,
+	["Ruby"] = 10,
+	["Amethyst"] = 10,
+	["Spoon"] = 5,
+	["Plate"] = 5,
+	["Diamond"] = 10,
+	["Chain"] = 5,
+	["Sapphire"] = 10,
+	["Goblet"] = 5,
+	["Bowl"] = 5,
+	["Emerald"] = 10,
+	["Model"] = 67,
+}
+
+local function WorldToScreen(World)
+	local Screen, InBounds = WorldToViewportPoint(Camera, World)
+	return Vector2.new(Screen.X, Screen.Y), InBounds, Screen.Z
+end
 
 local Trinket = {
 	Started = false,
 	Trinkets = {},
 	Connections = {},
 
+	Drawings = {},
 	ESP = {
 		Enabled = false,
 		MaxDistance = 1000,
@@ -50,7 +70,166 @@ local Trinket = {
 }
 
 local function GetTrinketValue(TrinketName)
-	return 0
+	return ValueMap[TrinketName]
+end
+
+function Trinket:UpdateESP()
+	if not Trinket.ESP.Enabled then
+		for _, Drawings in pairs(Trinket.Drawings) do
+			if Drawings.Name then
+				Drawings.Name.Visible = false
+			end
+			if Drawings.Distance then
+				Drawings.Distance.Visible = false
+			end
+			if Drawings.Value then
+				Drawings.Value.Visible = false
+			end
+		end
+		return
+	end
+
+	local Character = Utility.GetCharacter(Player)
+	if not Character then
+		return
+	end
+
+	local HumanoidRootPart = FindFirstChild(Character, "HumanoidRootPart")
+	if not HumanoidRootPart then
+		return
+	end
+
+	for TrinketModel, Data in pairs(Trinket.Trinkets) do
+		local ID = Data.ID
+		local Drawings = Trinket.Drawings[ID]
+
+		if not Drawings then
+			continue
+		end
+
+		if not Data.IsActive or not Data.Model then
+			if Drawings.Name then
+				Drawings.Name.Visible = false
+			end
+			if Drawings.Distance then
+				Drawings.Distance.Visible = false
+			end
+			if Drawings.Value then
+				Drawings.Value.Visible = false
+			end
+			continue
+		end
+
+		local Distance = (HumanoidRootPart.Position - TrinketModel.Position).Magnitude
+
+		if Distance > Trinket.ESP.MaxDistance then
+			if Drawings.Name then
+				Drawings.Name.Visible = false
+			end
+			if Drawings.Distance then
+				Drawings.Distance.Visible = false
+			end
+			if Drawings.Value then
+				Drawings.Value.Visible = false
+			end
+			continue
+		end
+
+		local ScreenPos, OnScreen = WorldToScreen(TrinketModel.Position)
+
+		if not OnScreen then
+			if Drawings.Name then
+				Drawings.Name.Visible = false
+			end
+			if Drawings.Distance then
+				Drawings.Distance.Visible = false
+			end
+			if Drawings.Value then
+				Drawings.Value.Visible = false
+			end
+			continue
+		end
+
+		local YOffset = 0
+
+		if Trinket.ESP.Name.Enabled and Drawings.Name then
+			Drawings.Name.Text = Data.Name or "Unknown"
+			Drawings.Name.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
+			Drawings.Name.Color = Trinket.ESP.Name.Color
+			Drawings.Name.Transparency = 1 - Trinket.ESP.Name.Transparency
+			Drawings.Name.Visible = true
+			YOffset = YOffset + 15
+		else
+			if Drawings.Name then
+				Drawings.Name.Visible = false
+			end
+		end
+
+		if Trinket.ESP.Distance.Enabled and Drawings.Distance then
+			Drawings.Distance.Text = string.format("[%.1fm]", Distance)
+			Drawings.Distance.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
+			Drawings.Distance.Color = Trinket.ESP.Distance.Color
+			Drawings.Distance.Transparency = 1 - Trinket.ESP.Distance.Transparency
+			Drawings.Distance.Visible = true
+			YOffset = YOffset + 14
+		else
+			if Drawings.Distance then
+				Drawings.Distance.Visible = false
+			end
+		end
+
+		if Trinket.ESP.Value.Enabled and Drawings.Value and Data.Value then
+			Drawings.Value.Text = "$" .. tostring(Data.Value)
+			Drawings.Value.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
+			Drawings.Value.Color = Trinket.ESP.Value.Color
+			Drawings.Value.Transparency = 1 - Trinket.ESP.Value.Transparency
+			Drawings.Value.Visible = true
+		else
+			if Drawings.Value then
+				Drawings.Value.Visible = false
+			end
+		end
+	end
+end
+
+function Trinket:InitESP()
+	for TrinketModel, Data in pairs(Trinket.Trinkets) do
+		local ID = Data.ID
+
+		local NameText = Drawing.new("Text")
+		NameText.Text = ""
+		NameText.Color = Trinket.ESP.Name.Color
+		NameText.Size = 13
+		NameText.Center = true
+		NameText.Outline = true
+		NameText.Visible = false
+		NameText.Font = 1
+
+		local DistanceText = Drawing.new("Text")
+		DistanceText.Text = ""
+		DistanceText.Color = Trinket.ESP.Distance.Color
+		DistanceText.Size = 12
+		DistanceText.Center = true
+		DistanceText.Outline = true
+		DistanceText.Visible = false
+		DistanceText.Font = 2
+
+		-- Create Value Text
+		local ValueText = Drawing.new("Text")
+		ValueText.Text = ""
+		ValueText.Color = Trinket.ESP.Value.Color
+		ValueText.Size = 12
+		ValueText.Center = true
+		ValueText.Outline = true
+		ValueText.Visible = false
+		ValueText.Font = 1
+
+		Trinket.Drawings[ID] = {
+			Name = NameText,
+			Distance = DistanceText,
+			Value = ValueText,
+		}
+	end
 end
 
 function Trinket:HandleAutograb()
@@ -137,7 +316,13 @@ function Trinket:Start()
 	Trinket.Started = true
 
 	Trinket:CacheTrinkets()
+	Trinket:InitESP()
 	Trinket:HandleAutograb()
+
+	local UpdateConnection = Heartbeat:Connect(function()
+		Trinket:UpdateESP()
+	end)
+	table.insert(Trinket.Connections, UpdateConnection)
 end
 
 function Trinket:Stop()
@@ -152,6 +337,20 @@ function Trinket:Stop()
 		end
 	end
 	table.clear(Trinket.Connections)
+
+	-- Clean up all drawings
+	for _, Drawings in pairs(Trinket.Drawings) do
+		if Drawings.Name then
+			Drawings.Name:Remove()
+		end
+		if Drawings.Distance then
+			Drawings.Distance:Remove()
+		end
+		if Drawings.Value then
+			Drawings.Value:Remove()
+		end
+	end
+	table.clear(Trinket.Drawings)
 end
 
 return Trinket
