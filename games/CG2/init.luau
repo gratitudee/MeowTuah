@@ -160,7 +160,7 @@ return function(self)
 	})
 
 	TrinketAutograbTab:AddToggle("AutograbRespectDistance", {
-		Text = "Respect Max Click Detector Distance",
+		Text = "Respect Activation Distance",
 		Default = true,
 		Tooltip = "Auto grab won't try to grab the item if the player isn't close enough to it.",
 	})
