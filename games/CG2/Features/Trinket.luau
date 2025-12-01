@@ -40,6 +40,10 @@ local function WorldToScreen(World)
 	return Vector2.new(Screen.X, Screen.Y), InBounds, Screen.Z
 end
 
+local function GetFont(Name)
+	return DrawingFonts[Name]
+end
+
 local Trinket = {
 	Started = false,
 	Trinkets = {},
@@ -165,6 +169,7 @@ function Trinket:UpdateESP()
 			Drawings.Name.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
 			Drawings.Name.Color = Trinket.ESP.Name.Color
 			Drawings.Name.Transparency = 1 - Trinket.ESP.Name.Transparency
+			Drawings.Name.Font = GetFont(Trinket.ESP.Font)
 			Drawings.Name.Visible = true
 			YOffset = YOffset + 15
 		else
@@ -178,6 +183,7 @@ function Trinket:UpdateESP()
 			Drawings.Distance.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
 			Drawings.Distance.Color = Trinket.ESP.Distance.Color
 			Drawings.Distance.Transparency = 1 - Trinket.ESP.Distance.Transparency
+			Drawings.Distance.Font = GetFont(Trinket.ESP.Font)
 			Drawings.Distance.Visible = true
 			YOffset = YOffset + 14
 		else
@@ -191,6 +197,7 @@ function Trinket:UpdateESP()
 			Drawings.Value.Position = Vector2.new(ScreenPos.X, ScreenPos.Y + YOffset)
 			Drawings.Value.Color = Trinket.ESP.Value.Color
 			Drawings.Value.Transparency = 1 - Trinket.ESP.Value.Transparency
+			Drawings.Value.Font = GetFont(Trinket.ESP.Font)
 			Drawings.Value.Visible = true
 		else
 			if Drawings.Value then
@@ -201,17 +208,17 @@ function Trinket:UpdateESP()
 end
 
 function Trinket:InitESP()
-	for TrinketModel, Data in pairs(Trinket.Trinkets) do
+	for _, Data in pairs(Trinket.Trinkets) do
 		local ID = Data.ID
 
 		local NameText = Drawing.new("Text")
 		NameText.Text = ""
 		NameText.Color = Trinket.ESP.Name.Color
-		NameText.Size = 13
+		NameText.Size = 12
 		NameText.Center = true
 		NameText.Outline = true
 		NameText.Visible = false
-		NameText.Font = 1
+		NameText.Font = GetFont(Trinket.ESP.Font)
 
 		local DistanceText = Drawing.new("Text")
 		DistanceText.Text = ""
@@ -220,7 +227,7 @@ function Trinket:InitESP()
 		DistanceText.Center = true
 		DistanceText.Outline = true
 		DistanceText.Visible = false
-		DistanceText.Font = 2
+		DistanceText.Font = GetFont(Trinket.ESP.Font)
 
 		-- Create Value Text
 		local ValueText = Drawing.new("Text")
@@ -230,7 +237,7 @@ function Trinket:InitESP()
 		ValueText.Center = true
 		ValueText.Outline = true
 		ValueText.Visible = false
-		ValueText.Font = 1
+		ValueText.Font = GetFont(Trinket.ESP.Font)
 
 		Trinket.Drawings[ID] = {
 			Name = NameText,
