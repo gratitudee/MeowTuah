@@ -159,6 +159,21 @@ return function(self)
 		Tooltip = "Enables Trinket Auto Grabbing.",
 	})
 
+	TrinketAutograbTab:AddToggle("TrinketAutograbRespectClickDetectorDitance", {
+		Text = "Respect Max Click Detector Distance",
+		Default = true,
+		Tooltip = "Auto grab won't try to grab the item if the player isn't close enough to it.",
+	})
+
+	TrinketVisualsTab:AddSlider("TrinketAutograbMaxDistance", {
+		Text = "Max Distance",
+		Default = 10,
+		Min = 1,
+		Max = 100,
+		Rounding = 1,
+		Compact = false,
+	})
+
 	-- Movement Stuff
 	local MovementRightGroupBox = Tabs.Main:AddRightGroupbox("Movement")
 	MovementRightGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
