@@ -1,5 +1,5 @@
 -- References
-local Services, Utility = MeowTuah.Services, MeowTuah.Utility
+local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local Workspace = Services.Workspace
 local RunService = Services.RunService
 local CoreGui = Services.CoreGui
