@@ -131,6 +131,7 @@ function Trinket:CacheTrinkets()
 end
 
 function Trinket:Start()
+	print("TRINKET: STARTED")
 	if Trinket.Started then
 		return
 	end
