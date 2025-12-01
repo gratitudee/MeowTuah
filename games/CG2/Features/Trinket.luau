@@ -229,7 +229,6 @@ function Trinket:InitESP()
 		DistanceText.Visible = false
 		DistanceText.Font = GetFont(Trinket.ESP.Font)
 
-		-- Create Value Text
 		local ValueText = Drawing.new("Text")
 		ValueText.Text = ""
 		ValueText.Color = Trinket.ESP.Value.Color
@@ -353,7 +352,6 @@ function Trinket:Stop()
 	end
 	table.clear(Trinket.Connections)
 
-	-- Clean up all drawings
 	for _, Drawings in pairs(Trinket.Drawings) do
 		if Drawings.Name then
 			Drawings.Name:Remove()
