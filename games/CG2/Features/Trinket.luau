@@ -116,7 +116,7 @@ function Trinket:CacheTrinkets()
 			SharedTrinket.Model = Child
 		end)
 
-		local RemovedConnection = Utility.index(WorkspaceTrinket, "ChildRemoved"):Connect(function(Child)
+		local RemovedConnection = Utility.index(WorkspaceTrinket, "ChildRemoved"):Connect(function()
 			local SharedTrinket = Trinket.Trinkets[WorkspaceTrinket]
 			SharedTrinket.IsActive = false
 			SharedTrinket.Name = nil
