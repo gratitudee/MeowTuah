@@ -5,14 +5,6 @@ local AutoParry, Movement, PlayerESP, Trinket =
 	LoadModule(`{Base}/PlayerESP.luau`),
 	LoadModule(`{Base}/Trinket.luau`)
 
-local s, e = pcall(function(...)
-	LoadModule(`{Base}/Trinket.luau`)
-end)
-print(e)
-if not s then
-	print(`[!]:{e}`)
-end
-
 return function(self)
 	local Library, SaveManager, ThemeManager = MeowTuah.Library, MeowTuah.SaveManager, MeowTuah.ThemeManager
 	local MainWindow = Library:CreateWindow({
