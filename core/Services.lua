@@ -1,5 +1,5 @@
 -- Service Module
-local utility = MeowTuah.Utility
+local utility = LoadModule("core/Utility.lua")
 local serviceCache = {}
 
 local function getService(serviceName: string): Instance
