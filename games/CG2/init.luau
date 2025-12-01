@@ -310,6 +310,9 @@ return function(self)
 	end)
 
 	local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu")
+	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
+	Library.ToggleKeybind = Options.MenuKeybind
+
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
@@ -323,14 +326,6 @@ return function(self)
 			Library.KeybindFrame.Visible = Value
 		end,
 	})
-
-	VisualsLeftGroup:AddToggle("PlayerESPEnabled", {
-		Text = "Enable",
-		Default = false,
-		Tooltip = "Master Switch For The Player ESP.",
-	})
-	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
-	Library.ToggleKeybind = Options.MenuKeybind
 
 	-- M A N A G E R S . . .
 	SaveManager:SetLibrary(Library)
