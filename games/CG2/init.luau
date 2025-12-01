@@ -346,7 +346,7 @@ return function(self)
 		end,
 	})
 
-	Menu:AddDropdown("FontSelectionDropdown", {
+	MenuGroup:AddDropdown("FontSelectionDropdown", {
 		Values = { "UI", "System", "Plex", "Monospace" },
 		Default = 1,
 		Multi = false,
