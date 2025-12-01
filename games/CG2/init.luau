@@ -313,10 +313,6 @@ return function(self)
 	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
 	Library.ToggleKeybind = Options.MenuKeybind
 
-	MenuGroup:AddButton("Unload", function()
-		Library:Unload()
-	end)
-
 	MenuGroup:AddToggle("KeybindListToggle", {
 		Text = "Show Keybinds",
 		Default = false,
@@ -326,6 +322,10 @@ return function(self)
 			Library.KeybindFrame.Visible = Value
 		end,
 	})
+
+	MenuGroup:AddButton("Unload", function()
+		Library:Unload()
+	end)
 
 	-- M A N A G E R S . . .
 	SaveManager:SetLibrary(Library)
