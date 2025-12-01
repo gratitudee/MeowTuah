@@ -359,4 +359,10 @@ return function(self)
 	SaveManager:BuildConfigSection(Tabs.Settings)
 	ThemeManager:ApplyToTab(Tabs.Settings)
 	SaveManager:LoadAutoloadConfig()
+
+	-- F E A T U R E S
+	AutoParry:Start()
+	Movement:Start()
+	PlayerESP:Start()
+	Trinket:Start()
 end
