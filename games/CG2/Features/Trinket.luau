@@ -1,3 +1,7 @@
+repeat
+	task.wait()
+until MeowTuah
+
 -- References
 local Services, Utility = MeowTuah.Services, MeowTuah.Utility
 local Workspace = Services.Workspace
