@@ -118,7 +118,7 @@ function PlayerESP:DrawThread()
 		end
 
 		local _, OnScreen = WorldToScreen(RootPart.Position)
-		if not OnScreen then
+		if OnScreen then
 			for _, Dict in pairs(PlayerESP.Data) do
 				for _, drawing in pairs(Dict.Drawings) do
 					drawing:SetVisible(false)
@@ -173,6 +173,10 @@ function PlayerESP:DrawThread()
 end
 
 function PlayerESP:ValidatePart(Part)
+	if not Part then
+		return false
+	end
+
 	if typeof(Part) ~= "Instance" then
 		return false
 	end
