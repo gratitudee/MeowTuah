@@ -125,6 +125,7 @@ function PlayerESP:InitPlayer(Player)
 
 		PlayerDict.Connections.CharacterRemoved = Character:GetPropertyChangedSignal("Parent"):Connect(function()
 			if not Character.Parent then
+				table.clear(PlayerDict.Bodyparts)
 				PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
 				PlayerDict.Connections.CharacterDescendantAdded = nil
 
