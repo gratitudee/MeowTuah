@@ -1,11 +1,16 @@
 local Services, Utility, ESP =
 	LoadModule("core/Services.lua"), LoadModule("core/Utility.lua"), LoadModule("modules/PlayerESP.lua")
 local Players = Services.Players
+local Workspace = Services.Workspace
 local RunService = Services.RunService
 
+local Player = Utility.GetPlayer()
 local Heartbeat = Utility.index(RunService, "Heartbeat")
 local PlayerAdded, PlayerRemoving = Utility.index(Players, "PlayerAdded"), Utility.index(Players, "PlayerRemoving")
+local FindFirstChild = Utility.FindFirstChild
 local GetChildren = Utility.GetChildren
+local Camera = Utility.index(Workspace, "CurrentCamera")
+local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
 
 local PlayerESP = {
 	Enabled = false,
@@ -57,6 +62,25 @@ local function GetFont(Name)
 	return DrawingFonts[Name]
 end
 
+local function GetChildrenWithValidation(Object, Validation)
+	local ToReturn = {}
+	for _, Child in pairs(GetChildren(Object)) do
+		local ShouldPass = true
+		if Validation then
+			ShouldPass = Validation(Object)
+		end
+
+		if ShouldPass then
+			table.insert(ToReturn, Object)
+		end
+	end
+end
+
+local function WorldToScreen(World)
+	local Screen, InBounds = WorldToViewportPoint(Camera, World)
+	return Vector2.new(Screen.X, Screen.Y), InBounds, Screen.Z
+end
+
 function PlayerESP:DrawThread()
 	if not PlayerESP.Enabled then
 		for _, Dict in pairs(PlayerESP.Data) do
@@ -69,9 +93,46 @@ function PlayerESP:DrawThread()
 
 	for _, Dictionary in pairs(PlayerESP.Data) do
 		local Player = Dictionary.Player
+		local Character = Dictionary.Character
+		if not Character then
+			for _, Dict in pairs(PlayerESP.Data) do
+				for _, drawing in pairs(Dict.Drawings) do
+					drawing:SetVisible(false)
+				end
+			end
+			continue
+		end
+
+		local RootPart = FindFirstChild(Character, "HumanoidRootPart")
+		if not RootPart then
+			for _, Dict in pairs(PlayerESP.Data) do
+				for _, drawing in pairs(Dict.Drawings) do
+					drawing:SetVisible(false)
+				end
+			end
+			continue
+		end
+
+		local _, OnScreen = WorldToScreen(RootPart.Position)
+		if not OnScreen then
+			for _, Dict in pairs(PlayerESP.Data) do
+				for _, drawing in pairs(Dict.Drawings) do
+					drawing:SetVisible(false)
+				end
+			end
+			continue
+		end
+
 		local Drawings = Dictionary.Drawings
-		local Bounds = ESP:GetBoundingBox(Dictionary.Bodyparts)
-		if not Bounds then -- nothing to draw with
+		local Bounds = ESP:GetBoundingBox(GetChildrenWithValidation(Character, function(object)
+			PlayerESP:ValidatePart(object)
+		end))
+		if not Bounds then
+			for _, Dict in pairs(PlayerESP.Data) do
+				for _, drawing in pairs(Dict.Drawings) do
+					drawing:SetVisible(false)
+				end
+			end
 			continue
 		end
 
@@ -139,52 +200,8 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 
 	PlayerDict.Character = Player.Character
-
-	if PlayerDict.Character then
-		for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
-			if PlayerESP:ValidatePart(Bodypart) then
-				table.insert(PlayerDict.Bodyparts, Bodypart)
-			end
-		end
-	end
-
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
 		PlayerDict.Character = Character
-		table.clear(PlayerDict.Bodyparts)
-		for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
-			if PlayerESP:ValidatePart(Bodypart) then
-				table.insert(PlayerDict.Bodyparts, Bodypart)
-			end
-		end
-
-		PlayerDict.Character = Character
-		PlayerDict.Connections.CharacterDescendantAdded = Character.DescendantAdded:Connect(function(Child)
-			local Valid = PlayerESP:ValidatePart(Child)
-			if Valid then
-				table.insert(PlayerDict.Bodyparts, Child)
-			end
-		end)
-
-		PlayerDict.Connections.CharacterDescendantRemoved = Character.DescendantRemoving:Connect(function(Child)
-			for i, v in pairs(PlayerDict.Bodyparts) do
-				if v == Child then
-					table.remove(PlayerDict.Bodyparts, i)
-					break
-				end
-			end
-		end)
-	end)
-
-	PlayerDict.Connections.CharacterRemoved = Player.CharacterRemoving:Connect(function()
-		if PlayerDict.Connections.CharacterDescendantAdded then
-			PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
-			PlayerDict.Connections.CharacterDescendantAdded = nil
-		end
-
-		if PlayerDict.Connections.CharacterDescendantRemoved then
-			PlayerDict.Connections.CharacterDescendantRemoved:Disconnect()
-			PlayerDict.Connections.CharacterDescendantRemoved = nil
-		end
 	end)
 end
 
