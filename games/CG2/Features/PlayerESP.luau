@@ -67,6 +67,7 @@ local function GetChildrenWithValidation(Object, Validation)
 	for _, Child in pairs(GetChildren(Object)) do
 		if Validation and Validation(Child) then
 			table.insert(ToReturn, Object)
+			MeowTuah.Print("Validated")
 		end
 	end
 	return ToReturn
