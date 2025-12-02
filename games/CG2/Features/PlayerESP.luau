@@ -74,6 +74,7 @@ local function GetChildrenWithValidation(Object, Validation)
 			table.insert(ToReturn, Object)
 		end
 	end
+	return ToReturn
 end
 
 local function WorldToScreen(World)
