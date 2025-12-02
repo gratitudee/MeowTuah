@@ -14,18 +14,6 @@ getgenv().LoadModule = function(ModulePath)
 	return Result
 end
 
--- vars
-local games = {
-	{
-		Name = "Universal",
-		Load = LoadModule("games/Universal/init.luau"),
-	},
-	{
-		Name = "Cult Game 2",
-		Load = LoadModule("games/CG2/init.luau"),
-	},
-}
-
 local OriginalFindService = game.FindService
 local function Hook(cb)
 	if getgenv().HookedFindService then
@@ -34,17 +22,29 @@ local function Hook(cb)
 	end
 
 	getgenv().HookedFindService = true
-	hookfunction(OriginalFindService, function(self, Service)
+	hookfunction(game.FindService, function(self, Service)
 		if Service == "VirtualUser" or Service == "VirtualInputManager" or Service == "UGCValidationService" then
 			return false
 		end
+
 		return OriginalFindService(self, Service)
 	end)
-	task.delay(3, cb)
+	cb()
 end
 
 return function(Override)
 	Hook(function()
+		local games = {
+			{
+				Name = "Universal",
+				Load = LoadModule("games/Universal/init.luau"),
+			},
+			{
+				Name = "Cult Game 2",
+				Load = LoadModule("games/CG2/init.luau"),
+			},
+		}
+
 		getgenv().MeowTuah = {
 			Library = LoadModule("packages/UI.lua"),
 			SaveManager = LoadModule("packages/SaveManager.lua"),
