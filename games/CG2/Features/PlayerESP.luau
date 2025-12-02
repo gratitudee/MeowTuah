@@ -139,9 +139,12 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 
 	PlayerDict.Character = Player.Character
-	for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
-		if PlayerESP:ValidatePart(Bodypart) then
-			table.insert(PlayerDict.Bodyparts, Bodypart)
+
+	if PlayerDict.Character then
+		for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
+			if PlayerESP:ValidatePart(Bodypart) then
+				table.insert(PlayerDict.Bodyparts, Bodypart)
+			end
 		end
 	end
 
