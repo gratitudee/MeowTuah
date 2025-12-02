@@ -108,11 +108,17 @@ function PlayerESP:DrawBoxFilled()
 
 		SetColor = function(self, color, transparency)
 			self.Box.Color = color
-			self.Box.Transparency = 1 - 0transparency
+			self.Box.Transparency = 1 - transparency
 		end,
 
 		SetVisible = function(self, state)
 			self.Box.Visible = state
+		end,
+
+		Remove = function(self)
+			self.Outer:Remove()
+			self.Middle:Remove()
+			self.Inner:Remove()
 		end,
 	}
 end
