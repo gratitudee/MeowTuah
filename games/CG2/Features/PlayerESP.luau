@@ -114,6 +114,7 @@ function PlayerESP:InitPlayer(Player)
 	end
 
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
+		PlayerDict.Character = Character
 		table.clear(PlayerDict.Bodyparts)
 		for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
 			if PlayerESP:ValidatePart(Bodypart) then
