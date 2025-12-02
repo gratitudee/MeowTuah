@@ -75,6 +75,7 @@ function PlayerESP:DrawBox()
 
 		SetColor = function(self, color, alpha)
 			self.Middle.Color = color
+			self.Inner.Color = color
 			self.Middle.Transparency = 1 - alpha
 			self.Outer.Transparency = 1 - alpha
 			self.Inner.Transparency = 1 - alpha
