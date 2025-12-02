@@ -250,15 +250,6 @@ return function(self)
 		PlayerESP.Health.Enabled = Toggles.PlayerHealthEnabled.Value
 	end)
 
-	Toggles.PlayerBountyEnabled:OnChanged(function()
-		PlayerESP.Bounty.Enabled = Toggles.PlayerBountyEnabled.Value
-	end)
-
-	Options.PlayerBountyColor:OnChanged(function()
-		PlayerESP.Bounty.Color = Options.PlayerBountyColor.Value
-		PlayerESP.Bounty.Transparency = Options.PlayerBountyColor.Transparency
-	end)
-
 	-- Trinket Callbacks
 	Toggles.TrinketESPEnabled:OnChanged(function()
 		Trinket.ESP.Enabled = Toggles.TrinketESPEnabled.Value
