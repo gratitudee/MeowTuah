@@ -90,12 +90,17 @@ function PlayerESP:DrawThread()
 		end
 
 		if PlayerESP.Name.Enabled then
-			Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
 			Drawings.Name:SetText(Player.Name)
-			local TextBounds = Drawings.Name.Text.TextBounds
+			Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
+			Drawings.Name.Text.Size = PlayerESP.Size
+
+			local TextBounds = Drawings.Name.TextBounds
 			local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
 			local Y = Bounds.Y - TextBounds.Y - 2
-			Drawings.Name:SetPosition(X, Y, PlayerESP.Size)
+			Drawings.Name:SetPosition(X, Y)
+			Drawings.Name:SetColor(PlayerESP.Name.Color, PlayerESP.Name.Transparency)
+		else
+			Drawings.Name:SetVisible(false)
 		end
 	end
 end

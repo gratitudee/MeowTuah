@@ -138,15 +138,13 @@ function PlayerESP:DrawText()
 	return {
 		Text = Text,
 
-		SetPosition = function(self, x, y, size)
+		SetPosition = function(self, x, y)
 			self.Text.Position = Vector2.new(x, y)
-			self.Text.Size = size
 			self.Text.Visible = true
 		end,
 
-		SetColor = function(self, TextColor, OutlineColor, Transparency)
+		SetColor = function(self, TextColor, Transparency)
 			self.Text.Color = TextColor
-			self.Text.OutlineColor = OutlineColor
 			self.Text.Transparency = 1 - Transparency
 		end,
 
