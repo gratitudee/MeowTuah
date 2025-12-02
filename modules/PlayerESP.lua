@@ -32,14 +32,14 @@ end
 -- Internal Functions
 function PlayerESP:DrawBox()
 	local Outer = Drawing.new("Square")
-	Outer.Thickness = 4
+	Outer.Thickness = 3
 	Outer.Filled = false
 	Outer.Color = Color3.new(0, 0, 0)
 	Outer.Transparency = 1
 	Outer.Visible = false
 
 	local Middle = Drawing.new("Square")
-	Middle.Thickness = 2
+	Middle.Thickness = 1.5
 	Middle.Filled = false
 	Middle.Color = Color3.new(1, 1, 1)
 	Middle.Transparency = 1
@@ -58,24 +58,26 @@ function PlayerESP:DrawBox()
 		Inner = Inner,
 
 		SetPosition = function(self, x, y, w, h)
-			self.Outer.Position = Vector2.new(x, y)
-			self.Middle.Position = Vector2.new(x, y)
-			self.Inner.Position = Vector2.new(x, y)
+			self.Outer.Position = Vector2.new(x - 2, y - 2)
+			self.Outer.Size = Vector2.new(w + 4, h + 4)
 
-			self.Outer.Size = Vector2.new(w, h)
+			self.Middle.Position = Vector2.new(x, y)
 			self.Middle.Size = Vector2.new(w, h)
-			self.Inner.Size = Vector2.new(w, h)
+
+			self.Inner.Position = Vector2.new(x + 1, y + 1)
+			self.Inner.Size = Vector2.new(w - 2, h - 2)
 
 			self.Outer.Visible = true
 			self.Middle.Visible = true
 			self.Inner.Visible = true
 		end,
 
-		SetColor = function(self, color, transparency)
+		SetColor = function(self, color, alpha)
 			self.Middle.Color = color
-			self.Middle.Transparency = 1 - transparency
-			self.Outer.Transparency = 1 - transparency
-			self.Inner.Transparency = 1 - transparency
+			self.Middle.Transparency = 1 - alpha
+
+			self.Outer.Transparency = 1 - alpha
+			self.Inner.Transparency = 1 - alpha
 		end,
 
 		SetVisible = function(self, state)
