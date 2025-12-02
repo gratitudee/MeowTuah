@@ -115,7 +115,6 @@ function PlayerESP:InitPlayer(Player)
 	end
 
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
-		table.clear(PlayerDict.Bodyparts)
 		PlayerDict.Character = Character
 		PlayerDict.Connections.CharacterDescendantAdded = Character.DescendantAdded:Connect(function(Child)
 			local Valid = PlayerESP:ValidatePart(Child)
@@ -124,15 +123,22 @@ function PlayerESP:InitPlayer(Player)
 			end
 		end)
 
-		PlayerDict.Connections.CharacterRemoved = Character:GetPropertyChangedSignal("Parent"):Connect(function()
-			if not Character.Parent then
-				PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
-				PlayerDict.Connections.CharacterDescendantAdded = nil
-
-				PlayerDict.Connections.CharacterRemoved:Disconnect()
-				PlayerDict.Connections.CharacterRemoved = nil
+		PlayerDict.Connections.CharacterDescendantRemoved = Character.DescendantRemoveing:Connect(function(Child)
+			for i, v in pairs(PlayerDict.Bodyparts) do
+				if v == Child then
+					table.remove(PlayerDict.Bodyparts, i)
+					break
+				end
 			end
 		end)
+	end)
+
+	PlayerDict.Connections.CharacterRemoved = Player.CharacterRemoving:Connect(function()
+		PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
+		PlayerDict.Connections.CharacterDescendantAdded = nil
+
+		PlayerDict.Connections.CharacterDescendantRemoved:Disconnect()
+		PlayerDict.Connections.CharacterDescendantRemoved = nil
 	end)
 end
 
