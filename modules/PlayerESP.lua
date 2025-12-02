@@ -126,6 +126,44 @@ function PlayerESP:DrawBoxFilled()
 	}
 end
 
+function PlayerESP:DrawText()
+	local Text = Drawing.new("Text")
+	Text.Centered = true
+	Text.Outline = true
+	Text.Color = Color3.new(1, 1, 1)
+	Text.OutlineColor = Color3.new(0, 0, 0)
+	Text.Visible = false
+	Text.Transparency = 1
+
+	return {
+		Text = Text,
+
+		SetPosition = function(self, x, y, size)
+			self.Text.Position = Vector2.new(x, y)
+			self.Text.Size = size
+			self.Text.Visible = true
+		end,
+
+		SetColor = function(self, TextColor, OutlineColor, Transparency)
+			self.Text.Color = TextColor
+			self.Text.OutlineColor = OutlineColor
+			self.Text.Transparency = 1 - Transparency
+		end,
+
+		SetVisible = function(self, state)
+			self.Text.Visible = state
+		end,
+
+		SetText = function(self, text)
+			self.Text.Text = text
+		end,
+
+		Remove = function(self)
+			self.Text:Remove()
+		end,
+	}
+end
+
 function PlayerESP:GetBoundingBox(Parts)
 	local MinX, MinY = math.huge, math.huge
 	local MaxX, MaxY = -math.huge, -math.huge

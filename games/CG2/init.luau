@@ -87,19 +87,13 @@ return function(self)
 		Transparency = 0,
 	})
 
-	VisualsLeftGroup:AddToggle("PlayerHealthEnabled", {
-		Text = "Health",
+	VisualsLeftGroup:AddToggle("PlayerHealthTextEnabled", {
+		Text = "Health Text",
 		Default = false,
-		Tooltip = "Enables Player Health Bar ESP",
-	})
-
-	VisualsLeftGroup:AddToggle("PlayerBountyEnabled", {
-		Text = "Bounty",
-		Default = false,
-		Tooltip = "Enables Player Bounty ESP",
-	}):AddColorPicker("PlayerBountyColor", {
+		Tooltip = "Enables Player Health Text ESP",
+	}):AddColorPicker("PlayerHealthTextColor", {
 		Default = Color3.new(1, 1, 1),
-		Title = "Bounty Color",
+		Title = "Health Text Color",
 		Transparency = 0,
 	})
 
@@ -246,8 +240,13 @@ return function(self)
 		PlayerESP.Distance.Transparency = Options.PlayerDistanceColor.Transparency
 	end)
 
-	Toggles.PlayerHealthEnabled:OnChanged(function()
-		PlayerESP.Health.Enabled = Toggles.PlayerHealthEnabled.Value
+	Toggles.PlayerHealthTextEnabled:OnChanged(function()
+		PlayerESP["Health Text"].Enabled = Toggles.PlayerHealthTextEnabled.Value
+	end)
+
+	Options.PlayerHealthTextColor:OnChanged(function()
+		PlayerESP["Health Text"].Color = Options.PlayerHealthTextColor.Value
+		PlayerESP["Health Text"].Transparency = Options.PlayerHealthTextColor.Transparency
 	end)
 
 	-- Trinket Callbacks
@@ -347,6 +346,7 @@ return function(self)
 
 		Callback = function(Value)
 			Trinket.ESP.Font = Value
+			PlayerESP.Font = Value
 		end,
 	})
 

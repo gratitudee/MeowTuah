@@ -1,3 +1,4 @@
+local ThemeManager = require("../../../packages/ThemeManager")
 local Services, Utility, ESP =
 	LoadModule("core/Services.lua"), LoadModule("core/Utility.lua"), LoadModule("modules/PlayerESP.lua")
 local Players = Services.Players
@@ -13,6 +14,8 @@ local PlayerESP = {
 
 	ScriptConnections = {},
 	Data = {},
+	Font = "UI",
+	Size = 16,
 	Box = {
 		Enabled = false,
 		Color = Color3.new(1, 1, 1),
@@ -37,10 +40,23 @@ local PlayerESP = {
 		Transparency = 0,
 	},
 
-	Health = {
+	["Health Text"] = {
 		Enabled = false,
+		Color = Color3.new(1, 1, 1),
+		Transparency = 0,
 	},
 }
+
+local DrawingFonts = {
+	UI = 0,
+	System = 1,
+	Plex = 2,
+	Monospace = 3,
+}
+
+local function GetFont(Name)
+	return DrawingFonts[Name]
+end
 
 function PlayerESP:DrawThread()
 	if not PlayerESP.Enabled then
@@ -72,6 +88,15 @@ function PlayerESP:DrawThread()
 			Drawings["Filled Box"]:SetColor(PlayerESP["Filled Box"].Color, PlayerESP["Filled Box"].Transparency)
 		else
 			Drawings["Filled Box"]:SetVisible(false)
+		end
+
+		if PlayerESP.Name.Enabled then
+			Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
+			Drawings.Name:SetText(Player.Name)
+			local TextBounds = Drawings.Name.Text.TextBounds
+			local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
+			local Y = Bounds.Y - TextBounds.Y - 2
+			Drawings.Name:SetPosition(X, Y, PlayerESP.Size)
 		end
 	end
 end
@@ -105,6 +130,9 @@ function PlayerESP:InitPlayer(Player)
 
 	PlayerDict.Drawings.Box = ESP:DrawBox()
 	PlayerDict.Drawings["Filled Box"] = ESP:DrawBoxFilled()
+	PlayerDict.Drawings.Name = ESP:DrawText()
+	PlayerDict.Drawings.Distance = ESP:DrawText()
+	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 
 	PlayerDict.Character = Player.Character
 	for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
