@@ -62,17 +62,16 @@ local function GetFont(Name)
 	return DrawingFonts[Name]
 end
 
-local function GetChildrenWithValidation(Object, Validation)
-	local ToReturn = {}
-	for _, Child in pairs(GetChildren(Object)) do
-		if Validation and Validation(Child) then
-			table.insert(ToReturn, Object)
-			MeowTuah.Print("Validated")
+local function GetValidParts(Object)
+	local validParts = {}
+
+	for _, child in pairs(GetChildren(Object)) do
+		if PlayerESP:ValidatePart(child) then
+			table.insert(validParts, child)
 		end
 	end
 
-	print(`Validation List: {#ToReturn}`)
-	return ToReturn
+	return validParts
 end
 
 local function WorldToScreen(World)
@@ -129,16 +128,15 @@ function PlayerESP:DrawThread()
 		--
 
 		local Drawings = Dictionary.Drawings
-		local Bounds = ESP:GetBoundingBox(GetChildrenWithValidation(Character, function(object)
-			PlayerESP:ValidatePart(object)
-		end))
+		local ValidParts = GetValidParts(Character)
+		local Bounds = ESP:GetBoundingBox(ValidParts)
 		if not Bounds then
 			for _, Dict in pairs(PlayerESP.Data) do
 				for _, drawing in pairs(Dict.Drawings) do
 					drawing:SetVisible(false)
 				end
 			end
-			MeowTuah.Print("No Bounds!")
+			MeowTuah.Print(`No Bounds: {#ValidParts}`)
 			continue
 		end
 
