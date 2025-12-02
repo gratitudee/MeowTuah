@@ -94,7 +94,7 @@ function PlayerESP:DrawThread()
 			Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
 			Drawings.Name.Text.Size = PlayerESP.Size
 
-			local TextBounds = Drawings.Name.TextBounds
+			local TextBounds = Drawings.Name.Text.TextBounds
 			local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
 			local Y = Bounds.Y - TextBounds.Y - 2
 			Drawings.Name:SetPosition(X, Y)
