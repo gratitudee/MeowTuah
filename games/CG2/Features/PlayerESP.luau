@@ -68,6 +68,7 @@ local function GetValidParts(Object)
 	for _, child in pairs(GetChildren(Object)) do
 		--if PlayerESP:ValidatePart(child) then
 		table.insert(validParts, child)
+		print("validated part")
 		--end
 	end
 
