@@ -118,9 +118,7 @@ function PlayerESP:DrawBoxFilled()
 		end,
 
 		Remove = function(self)
-			self.Outer:Remove()
-			self.Middle:Remove()
-			self.Inner:Remove()
+			self.Box:Remove()
 		end,
 	}
 end
