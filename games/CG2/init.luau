@@ -350,19 +350,6 @@ return function(self)
 		end,
 	})
 
-	MenuGroup:AddSlider("FontSizeSlider", {
-		Text = "Font Size",
-		Default = 16,
-		Min = 1,
-		Max = 256,
-		Rounding = 1,
-		Compact = false,
-
-		Callback = function(Value)
-			PlayerESP.Size = Value
-		end,
-	})
-
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
