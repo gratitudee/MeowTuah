@@ -66,9 +66,9 @@ local function GetValidParts(Object)
 	local validParts = {}
 
 	for _, child in pairs(GetChildren(Object)) do
-		if PlayerESP:ValidatePart(child) then
-			table.insert(validParts, child)
-		end
+		--if PlayerESP:ValidatePart(child) then
+		table.insert(validParts, child)
+		--end
 	end
 
 	return validParts
@@ -114,7 +114,6 @@ function PlayerESP:DrawThread()
 			continue
 		end
 
-		--[[
 		local _, OnScreen = WorldToScreen(RootPart.Position)
 		if not OnScreen then
 			for _, Dict in pairs(PlayerESP.Data) do
@@ -124,7 +123,7 @@ function PlayerESP:DrawThread()
 			end
 			MeowTuah.Print("On Screen Failed!")
 			continue
-		end]]
+		end
 		--
 
 		local Drawings = Dictionary.Drawings
