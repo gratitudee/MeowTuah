@@ -32,7 +32,7 @@ local function Hook(cb)
 	cb()
 end
 
-return function(Override)
+return function(Options)
 	Hook(function()
 		local games = {
 			{
@@ -51,11 +51,16 @@ return function(Override)
 			ThemeManager = LoadModule("packages/ThemeManager.lua"),
 			Utility = LoadModule("core/Utility.lua"),
 			Services = LoadModule("core/Services.lua"),
+			Print = function(Message)
+				if Options.SCRIPT_DBG then
+					print(`[MEOW TUAH]: {Message}`)
+				end
+			end,
 		}
 
-		if Override then
+		if Options.Override then
 			for _, module in pairs(games) do
-				if module.Name == Override then
+				if module.Name == Options.Override then
 					return module.Load(module)
 				end
 			end

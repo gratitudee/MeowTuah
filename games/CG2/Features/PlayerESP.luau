@@ -101,6 +101,8 @@ function PlayerESP:DrawThread()
 					drawing:SetVisible(false)
 				end
 			end
+
+			MeowTuah.Print("No Character!")
 			continue
 		end
 
@@ -111,6 +113,7 @@ function PlayerESP:DrawThread()
 					drawing:SetVisible(false)
 				end
 			end
+			MeowTuah.Print("No Root!")
 			continue
 		end
 
@@ -121,6 +124,7 @@ function PlayerESP:DrawThread()
 					drawing:SetVisible(false)
 				end
 			end
+			MeowTuah.Print("On Screen Failed!")
 			continue
 		end
 
@@ -134,6 +138,7 @@ function PlayerESP:DrawThread()
 					drawing:SetVisible(false)
 				end
 			end
+			MeowTuah.Print("No Bounds!")
 			continue
 		end
 
