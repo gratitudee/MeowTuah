@@ -70,6 +70,8 @@ local function GetChildrenWithValidation(Object, Validation)
 			MeowTuah.Print("Validated")
 		end
 	end
+
+	print(`Validation List: {#ToReturn}`)
 	return ToReturn
 end
 
