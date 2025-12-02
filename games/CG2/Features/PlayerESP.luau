@@ -117,8 +117,9 @@ function PlayerESP:DrawThread()
 			continue
 		end
 
+		--[[
 		local _, OnScreen = WorldToScreen(RootPart.Position)
-		if OnScreen then
+		if not OnScreen then
 			for _, Dict in pairs(PlayerESP.Data) do
 				for _, drawing in pairs(Dict.Drawings) do
 					drawing:SetVisible(false)
@@ -126,7 +127,8 @@ function PlayerESP:DrawThread()
 			end
 			MeowTuah.Print("On Screen Failed!")
 			continue
-		end
+		end]]
+		--
 
 		local Drawings = Dictionary.Drawings
 		local Bounds = ESP:GetBoundingBox(GetChildrenWithValidation(Character, function(object)
