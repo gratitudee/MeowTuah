@@ -128,7 +128,7 @@ end
 
 function PlayerESP:DrawText()
 	local Text = Drawing.new("Text")
-	Text.Centered = true
+	Text.Center = true
 	Text.Outline = true
 	Text.Color = Color3.new(1, 1, 1)
 	Text.OutlineColor = Color3.new(0, 0, 0)
