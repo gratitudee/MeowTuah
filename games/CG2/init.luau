@@ -220,12 +220,12 @@ return function(self)
 	end)
 
 	Toggles.PlayerFilledBoxEnabled:OnChanged(function()
-		PlayerESP.FilledBox.Enabled = Toggles.PlayerFilledBoxEnabled.Value
+		PlayerESP["Filled Box"].Enabled = Toggles.PlayerFilledBoxEnabled.Value
 	end)
 
 	Options.PlayerFilledBoxColor:OnChanged(function()
-		PlayerESP.FilledBox.Color = Options.PlayerFilledBoxColor.Value
-		PlayerESP.FilledBox.Transparency = Options.PlayerFilledBoxColor.Transparency
+		PlayerESP["Filled Box"].Color = Options.PlayerFilledBoxColor.Value
+		PlayerESP["Filled Box"].Transparency = Options.PlayerFilledBoxColor.Transparency
 	end)
 
 	Toggles.PlayerNameEnabled:OnChanged(function()
