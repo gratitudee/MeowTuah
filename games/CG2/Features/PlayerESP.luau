@@ -65,12 +65,7 @@ end
 local function GetChildrenWithValidation(Object, Validation)
 	local ToReturn = {}
 	for _, Child in pairs(GetChildren(Object)) do
-		local ShouldPass = true
-		if Validation then
-			ShouldPass = Validation(Object)
-		end
-
-		if ShouldPass then
+		if Validation and Validation(Child) then
 			table.insert(ToReturn, Object)
 		end
 	end
