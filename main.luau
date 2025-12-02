@@ -40,7 +40,7 @@ local function Hook(cb)
 		end
 		return OriginalFindService(self, Service)
 	end)
-	task.delay(1, cb)
+	task.delay(3, cb)
 end
 
 return function(Override)
