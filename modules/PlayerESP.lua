@@ -162,56 +162,55 @@ function PlayerESP:DrawText()
 end
 
 function PlayerESP:GetBoundingBox(Parts)
-	local viewportSize = Camera.ViewportSize
-	local screenWidth, screenHeight = viewportSize.X, viewportSize.Y
-	local min_x, max_x = math.huge, -math.huge
-	local min_y, max_y = math.huge, -math.huge
-	local foundInFront = false
+	local MinX, MinY = math.huge, math.huge
+	local MaxX, MaxY = -math.huge, -math.huge
+	local FoundVisible = false
 
 	for _, Part in ipairs(Parts) do
 		if Part:IsA("BasePart") then
-			local screenPoint = Camera:WorldToScreenPoint(Part.Position)
-			if screenPoint.Z > 0 then
-				foundInFront = true
+			local CFrame = Part.CFrame
+			local HalfSize = Part.Size * 0.5
 
-				local x, y = screenPoint.X, screenPoint.Y
-				min_x = math.min(min_x, x)
-				max_x = math.max(max_x, x)
-				min_y = math.min(min_y, y)
-				max_y = math.max(max_y, y)
+			for _, Corner in ipairs(CubeCorners) do
+				local WorldPos = CFrame:PointToWorldSpace(HalfSize * Corner)
+				local ScreenPos, OnScreen = WorldToScreen(WorldPos)
+
+				if OnScreen then
+					FoundVisible = true
+
+					local X, Y = ScreenPos.X, ScreenPos.Y
+
+					if X < MinX then
+						MinX = X
+					end
+					if X > MaxX then
+						MaxX = X
+					end
+					if Y < MinY then
+						MinY = Y
+					end
+					if Y > MaxY then
+						MaxY = Y
+					end
+				end
 			end
 		end
 	end
 
-	if not foundInFront then
-		return nil
+	if not FoundVisible then
+		return {
+			X = MinX,
+			Y = MinY,
+			W = MaxX - MinX,
+			H = MaxY - MinY,
+		}
 	end
-
-	local w, h = max_x - min_x, max_y - min_y
-
-	local pad_x, pad_y = w * 0.23, h * 0.17
-	local final_x = min_x - pad_x
-	local final_y = min_y - pad_y
-	local final_w = w + (pad_x * 2)
-	local final_h = h + (pad_y * 2)
-
-	if final_w < 10 or final_h < 20 then
-		local center_x = (min_x + max_x) / 2
-		local center_y = (min_y + max_y) / 2
-		final_x = center_x - 30
-		final_y = center_y - 50
-		final_w = 60
-		final_h = 100
-	end
-
-	final_x = math.max(0, math.min(final_x, screenWidth - final_w))
-	final_y = math.max(0, math.min(final_y, screenHeight - final_h))
 
 	return {
-		X = final_x,
-		Y = final_y,
-		W = final_w,
-		H = final_h,
+		X = MinX,
+		Y = MinY,
+		W = MaxX - MinX,
+		H = MaxY - MinY,
 	}
 end
 
