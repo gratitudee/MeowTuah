@@ -34,7 +34,7 @@ function PlayerESP:DrawBox()
 	local Outer = Drawing.new("Square")
 	Outer.Thickness = 4
 	Outer.Filled = false
-	Outer.Color = Color3.new(1, 1, 1)
+	Outer.Color = Color3.new(0, 0, 0)
 	Outer.Transparency = 1
 	Outer.Visible = false
 
@@ -48,7 +48,7 @@ function PlayerESP:DrawBox()
 	local Inner = Drawing.new("Square")
 	Inner.Thickness = 1
 	Inner.Filled = false
-	Inner.Color = Color3.new(1, 1, 1)
+	Inner.Color = Color3.new(0, 0, 0)
 	Inner.Transparency = 1
 	Inner.Visible = false
 
@@ -93,7 +93,7 @@ end
 function PlayerESP:DrawBoxFilled()
 	local Box = Drawing.new("Square")
 	Box.Filled = true
-	Box.Color = Color
+	Box.Color = Color3.new(1, 1, 1)
 	Box.Transparency = 1
 	Box.Visible = false
 
