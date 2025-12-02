@@ -1,4 +1,3 @@
-local ThemeManager = require("../../../packages/ThemeManager")
 local Services, Utility, ESP =
 	LoadModule("core/Services.lua"), LoadModule("core/Utility.lua"), LoadModule("modules/PlayerESP.lua")
 local Players = Services.Players
