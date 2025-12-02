@@ -63,11 +63,15 @@ function PlayerESP:DrawThread()
 		if PlayerESP.Box.Enabled then
 			Drawings.Box:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
 			Drawings.Box:SetColor(PlayerESP.Box.Color, PlayerESP.Box.Transparency)
+		else
+			Drawings.Box:SetVisible(false)
 		end
 
 		if PlayerESP["Filled Box"].Enabled then
 			Drawings["Filled Box"]:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
 			Drawings["Filled Box"]:SetColor(PlayerESP.Box.Color, PlayerESP.Box.Transparency)
+		else
+			Drawings["Filled Box"]:SetVisible(false)
 		end
 	end
 end
