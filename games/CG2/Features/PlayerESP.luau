@@ -107,7 +107,6 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings["Filled Box"] = ESP:DrawBoxFilled()
 
 	PlayerDict.Character = Player.Character
-
 	for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
 		if PlayerESP:ValidatePart(Bodypart) then
 			table.insert(PlayerDict.Bodyparts, Bodypart)
@@ -115,6 +114,13 @@ function PlayerESP:InitPlayer(Player)
 	end
 
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
+		table.clear(PlayerDict.Bodyparts)
+		for _, Bodypart in pairs(PlayerDict.Character:GetDescendants()) do
+			if PlayerESP:ValidatePart(Bodypart) then
+				table.insert(PlayerDict.Bodyparts, Bodypart)
+			end
+		end
+
 		PlayerDict.Character = Character
 		PlayerDict.Connections.CharacterDescendantAdded = Character.DescendantAdded:Connect(function(Child)
 			local Valid = PlayerESP:ValidatePart(Child)
@@ -123,7 +129,7 @@ function PlayerESP:InitPlayer(Player)
 			end
 		end)
 
-		PlayerDict.Connections.CharacterDescendantRemoved = Character.DescendantRemoveing:Connect(function(Child)
+		PlayerDict.Connections.CharacterDescendantRemoved = Character.DescendantRemoving:Connect(function(Child)
 			for i, v in pairs(PlayerDict.Bodyparts) do
 				if v == Child then
 					table.remove(PlayerDict.Bodyparts, i)
@@ -134,11 +140,15 @@ function PlayerESP:InitPlayer(Player)
 	end)
 
 	PlayerDict.Connections.CharacterRemoved = Player.CharacterRemoving:Connect(function()
-		PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
-		PlayerDict.Connections.CharacterDescendantAdded = nil
+		if PlayerDict.Connections.CharacterDescendantAdded then
+			PlayerDict.Connections.CharacterDescendantAdded:Disconnect()
+			PlayerDict.Connections.CharacterDescendantAdded = nil
+		end
 
-		PlayerDict.Connections.CharacterDescendantRemoved:Disconnect()
-		PlayerDict.Connections.CharacterDescendantRemoved = nil
+		if PlayerDict.Connections.CharacterDescendantRemoved then
+			PlayerDict.Connections.CharacterDescendantRemoved:Disconnect()
+			PlayerDict.Connections.CharacterDescendantRemoved = nil
+		end
 	end)
 end
 
