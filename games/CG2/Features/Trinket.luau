@@ -307,6 +307,10 @@ function Trinket:CacheTrinkets()
 			SharedTrinket.Value = GetTrinketValue(Child.Name) or nil
 			SharedTrinket.ClickDetector = NewClickDetector or nil
 			SharedTrinket.Model = Child
+
+			if Child.Name:lower():find("rune") then
+				MeowTuah.Library:Notify(`A {Child.Name:upper()} HAS SPAWNED!`, 5)
+			end
 		end)
 
 		local RemovedConnection = Utility.index(WorkspaceTrinket, "ChildRemoved"):Connect(function()
