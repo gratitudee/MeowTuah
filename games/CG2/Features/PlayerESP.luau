@@ -5,7 +5,7 @@ local Workspace = Services.Workspace
 local RunService = Services.RunService
 
 local Player = Utility.GetPlayer()
-local Heartbeat = Utility.index(RunService, "Heartbeat")
+local RenderStepped = Utility.index(RunService, "RenderStepped")
 local PlayerAdded, PlayerRemoving = Utility.index(Players, "PlayerAdded"), Utility.index(Players, "PlayerRemoving")
 local FindFirstChild = Utility.FindFirstChild
 local GetChildren = Utility.GetChildren
@@ -20,6 +20,7 @@ local PlayerESP = {
 	Data = {},
 	Font = "UI",
 	Size = 18,
+	MaxDistance = 250,
 	Box = {
 		Enabled = false,
 		Color = Color3.new(1, 1, 1),
@@ -259,13 +260,13 @@ function PlayerESP:Start()
 		PlayerESP.Data[Player.Name] = nil
 	end)
 
-	local Heartbeat = Heartbeat:Connect(function()
+	local RenderSteppedConnection = RenderStepped:Connect(function()
 		PlayerESP:DrawThread()
 	end)
 
 	table.insert(PlayerESP.ScriptConnections, Added)
 	table.insert(PlayerESP.ScriptConnections, Removing)
-	table.insert(PlayerESP.ScriptConnections, Heartbeat)
+	table.insert(PlayerESP.ScriptConnections, RenderSteppedConnection)
 end
 
 function PlayerESP:Stop()

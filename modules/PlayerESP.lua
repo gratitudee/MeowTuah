@@ -1,24 +1,12 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local Workspace = Services.Workspace
-local RunService = Services.RunService
 
 -- Variables
-local Player = Utility.GetPlayer()
 local Camera = Utility.index(Workspace, "CurrentCamera")
 local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
-local Heartbeat = Utility.index(RunService, "Heartbeat")
-local FindFirstChild = Utility.FindFirstChild
-local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
-local GetChildren = Utility.GetChildren
 local CubeCorners = {
-	Vector3.new(-1, -1, -1),
-	Vector3.new(-1, -1, 1),
-	Vector3.new(-1, 1, -1),
-	Vector3.new(-1, 1, 1),
-	Vector3.new(1, -1, -1),
-	Vector3.new(1, -1, 1),
-	Vector3.new(1, 1, -1),
-	Vector3.new(1, 1, 1),
+	Vector3.new(0, -1, 0),
+	Vector3.new(0, 1, 0),
 }
 
 local PlayerESP = {}
