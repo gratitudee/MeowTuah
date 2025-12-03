@@ -248,7 +248,7 @@ function PlayerESP:Start()
 	local Info = {
 		List = {},
 		Index = 1,
-		PerFrame = 5,
+		PerFrame = 15,
 		LastUpdate = 0,
 		UpdatePer = 0,
 	}
