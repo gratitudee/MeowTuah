@@ -204,14 +204,14 @@ function PlayerESP:InitPlayer(Player)
 
 		PlayerDict.Connections.DescendantAdded = Character.DescendantAdded:Connect(function(child)
 			if PlayerESP:ValidatePart(child) then
-				table.insert(PlayerDict.ValidParts, child)
+				table.insert(PlayerDict.Bodyparts, child)
 			end
 		end)
 
 		PlayerDict.Connections.DescendantRemoved = Character.DescendantRemoving:Connect(function(child)
-			for i, part in ipairs(PlayerDict.ValidParts) do
+			for i, part in ipairs(PlayerDict.Bodyparts) do
 				if part == child then
-					table.remove(PlayerDict.ValidParts, i)
+					table.remove(PlayerDict.Bodyparts, i)
 					break
 				end
 			end
