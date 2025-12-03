@@ -114,8 +114,8 @@ function PlayerESP:DrawThread()
 			continue
 		end
 
-		local _, OnScreen = WorldToScreen(RootPart.Position)
-		if not OnScreen then
+		local _, _, Depth = WorldToScreen(RootPart.Position)
+		if Depth <= 0 then
 			for _, Dict in pairs(PlayerESP.Data) do
 				for _, drawing in pairs(Dict.Drawings) do
 					drawing:SetVisible(false)

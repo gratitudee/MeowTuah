@@ -173,9 +173,9 @@ function PlayerESP:GetBoundingBox(Parts)
 
 			for _, Corner in ipairs(CubeCorners) do
 				local WorldPos = CFrame:PointToWorldSpace(HalfSize * Corner)
-				local ScreenPos, OnScreen = WorldToScreen(WorldPos)
+				local ScreenPos, _, Depth = WorldToScreen(WorldPos)
 
-				if OnScreen then
+				if Depth > 0 then
 					FoundVisible = true
 
 					local X, Y = ScreenPos.X, ScreenPos.Y
@@ -198,12 +198,7 @@ function PlayerESP:GetBoundingBox(Parts)
 	end
 
 	if not FoundVisible then
-		return {
-			X = MinX,
-			Y = MinY,
-			W = MaxX - MinX,
-			H = MaxY - MinY,
-		}
+		return nil
 	end
 
 	return {
