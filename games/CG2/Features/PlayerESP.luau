@@ -195,7 +195,7 @@ function PlayerESP:InitPlayer(Player)
 			end
 		end)
 
-		PlayerDict.Connections.ChildRemoving = Character.ChildRemoving:Connect(function(child)
+		PlayerDict.Connections.ChildRemoving = Character.ChildRemoved:Connect(function(child)
 			for i, part in ipairs(PlayerDict.Bodyparts) do
 				if part == child then
 					table.remove(PlayerDict.Bodyparts, i)
