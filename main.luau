@@ -56,6 +56,13 @@ return function(Options)
 					print(`[MEOW TUAH]: {Message}`)
 				end
 			end,
+
+			SafeCall = function(self, ToCall)
+				local s, e = pcall(ToCall)
+				if not s then
+					self:Print(e)
+				end
+			end,
 		}
 
 		if Options.Override then
