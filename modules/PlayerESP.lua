@@ -5,8 +5,10 @@ local Workspace = Services.Workspace
 local Camera = Utility.index(Workspace, "CurrentCamera")
 local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
 local CubeCorners = {
-	Vector3.new(0, -1, 0),
-	Vector3.new(0, 1, 0),
+	Vector3.new(0, -1, -1),
+	Vector3.new(0, -1, 1),
+	Vector3.new(0, 1, -1),
+	Vector3.new(0, 1, 1),
 }
 
 local PlayerESP = {}
