@@ -250,7 +250,7 @@ function PlayerESP:Start()
 		Index = 1,
 		PerFrame = 5,
 		LastUpdate = 0,
-		UpdatePer = 1,
+		UpdatePer = 0,
 	}
 
 	local RenderSteppedConnection = RenderStepped:Connect(function()
@@ -278,7 +278,7 @@ function PlayerESP:Start()
 		end
 
 		local Processed = 0
-		while Processed < Info.PerFrame or Info.Index > #Info.List do
+		while Processed < Info.PerFrame and Info.Index <= #Info.List do
 			PlayerESP:DrawPlayer(Info.List[Info.Index])
 			Info.Index += 1
 			Processed += 1
