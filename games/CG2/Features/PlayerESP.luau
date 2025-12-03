@@ -93,6 +93,7 @@ function PlayerESP:DrawThread()
 		local Player = Dictionary.Player
 		local Character = Dictionary.Character
 		local Drawings = Dictionary.Drawings
+		local Bodyparts = Dictionary.Bodyparts
 
 		if not Character then
 			for _, drawing in pairs(Drawings) do
@@ -120,13 +121,12 @@ function PlayerESP:DrawThread()
 			continue
 		end
 
-		local ValidParts = GetValidParts(Character)
-		local Bounds = ESP:GetBoundingBox(ValidParts)
+		local Bounds = ESP:GetBoundingBox(Bodyparts)
 		if not Bounds then
 			for _, drawing in pairs(Drawings) do
 				drawing:SetVisible(false)
 			end
-			MeowTuah.Print(`No Bounds: {#ValidParts}`)
+			MeowTuah.Print(`No Bounds: {#Bodyparts}`)
 			continue
 		end
 
@@ -200,6 +200,37 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Character = Player.Character
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
 		PlayerDict.Character = Character
+		PlayerDict.Bodyparts = GetValidParts(Character)
+
+		PlayerDict.Connections.DescendantAdded = Character.DescendantAdded:Connect(function(child)
+			if PlayerESP:ValidatePart(child) then
+				table.insert(PlayerDict.ValidParts, child)
+			end
+		end)
+
+		PlayerDict.Connections.DescendantRemoved = Character.DescendantRemoving:Connect(function(child)
+			for i, part in ipairs(PlayerDict.ValidParts) do
+				if part == child then
+					table.remove(PlayerDict.ValidParts, i)
+					break
+				end
+			end
+		end)
+	end)
+
+	PlayerDict.Connections.CharacterRemoved = Player.CharacterRemoving:Connect(function()
+		PlayerDict.Character = nil
+		PlayerDict.Bodyparts = {}
+
+		if PlayerDict.Connections.DescendantAdded then
+			PlayerDict.Connections.DescendantAdded:Disconnect()
+			PlayerDict.Connections.DescendantAdded = nil
+		end
+
+		if PlayerDict.Connections.DescendantRemoved then
+			PlayerDict.Connections.DescendantRemoved:Disconnect()
+			PlayerDict.Connections.DescendantRemoved = nil
+		end
 	end)
 end
 
