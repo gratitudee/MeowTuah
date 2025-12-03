@@ -198,6 +198,7 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 
 	PlayerDict.Character = Player.Character
+	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
 		PlayerDict.Character = Character
 		PlayerDict.Bodyparts = GetValidParts(Character)
