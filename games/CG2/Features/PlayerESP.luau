@@ -80,84 +80,69 @@ local function WorldToScreen(World)
 	return Vector2.new(Screen.X, Screen.Y), InBounds, Screen.Z
 end
 
-function PlayerESP:DrawThread()
-	if not PlayerESP.Enabled then
-		for _, Dict in pairs(PlayerESP.Data) do
-			for _, drawing in pairs(Dict.Drawings) do
-				drawing:SetVisible(false)
-			end
+function PlayerESP:DrawPlayer(Dictionary)
+	local Player = Dictionary.Player
+	local Character = Dictionary.Character
+	local Drawings = Dictionary.Drawings
+	local Bodyparts = Dictionary.Bodyparts
+
+	if not Character then
+		for _, drawing in pairs(Drawings) do
+			drawing:SetVisible(false)
 		end
 		return
 	end
 
-	for _, Dictionary in pairs(PlayerESP.Data) do
-		local Player = Dictionary.Player
-		local Character = Dictionary.Character
-		local Drawings = Dictionary.Drawings
-		local Bodyparts = Dictionary.Bodyparts
-
-		if not Character then
-			for _, drawing in pairs(Drawings) do
-				drawing:SetVisible(false)
-			end
-			MeowTuah.Print("No Character!")
-			continue
+	local RootPart = FindFirstChild(Character, "HumanoidRootPart")
+	if not RootPart then
+		for _, drawing in pairs(Drawings) do
+			drawing:SetVisible(false)
 		end
+		return
+	end
 
-		local RootPart = FindFirstChild(Character, "HumanoidRootPart")
-		if not RootPart then
-			for _, drawing in pairs(Drawings) do
-				drawing:SetVisible(false)
-			end
-			MeowTuah.Print("No Root!")
-			continue
+	local _, OnScreen = WorldToScreen(RootPart.Position)
+	if not OnScreen then
+		for _, drawing in pairs(Drawings) do
+			drawing:SetVisible(false)
 		end
+		return
+	end
 
-		local _, OnScreen = WorldToScreen(RootPart.Position)
-		if not OnScreen then
-			for _, drawing in pairs(Drawings) do
-				drawing:SetVisible(false)
-			end
-			MeowTuah.Print("On Screen Failed!")
-			continue
+	local Bounds = ESP:GetBoundingBox(Bodyparts)
+	if not Bounds then
+		for _, drawing in pairs(Drawings) do
+			drawing:SetVisible(false)
 		end
+		return
+	end
 
-		local Bounds = ESP:GetBoundingBox(Bodyparts)
-		if not Bounds then
-			for _, drawing in pairs(Drawings) do
-				drawing:SetVisible(false)
-			end
-			MeowTuah.Print(`No Bounds: {#Bodyparts}`)
-			continue
-		end
+	if PlayerESP.Box.Enabled then
+		Drawings.Box:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
+		Drawings.Box:SetColor(PlayerESP.Box.Color, PlayerESP.Box.Transparency)
+	else
+		Drawings.Box:SetVisible(false)
+	end
 
-		if PlayerESP.Box.Enabled then
-			Drawings.Box:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
-			Drawings.Box:SetColor(PlayerESP.Box.Color, PlayerESP.Box.Transparency)
-		else
-			Drawings.Box:SetVisible(false)
-		end
+	if PlayerESP["Filled Box"].Enabled then
+		Drawings["Filled Box"]:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
+		Drawings["Filled Box"]:SetColor(PlayerESP["Filled Box"].Color, PlayerESP["Filled Box"].Transparency)
+	else
+		Drawings["Filled Box"]:SetVisible(false)
+	end
 
-		if PlayerESP["Filled Box"].Enabled then
-			Drawings["Filled Box"]:SetPosition(Bounds.X, Bounds.Y, Bounds.W, Bounds.H)
-			Drawings["Filled Box"]:SetColor(PlayerESP["Filled Box"].Color, PlayerESP["Filled Box"].Transparency)
-		else
-			Drawings["Filled Box"]:SetVisible(false)
-		end
+	if PlayerESP.Name.Enabled then
+		Drawings.Name:SetText(Player.Name)
+		Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
+		Drawings.Name.Text.Size = PlayerESP.Size
 
-		if PlayerESP.Name.Enabled then
-			Drawings.Name:SetText(Player.Name)
-			Drawings.Name.Text.Font = GetFont(PlayerESP.Font)
-			Drawings.Name.Text.Size = PlayerESP.Size
-
-			local TextBounds = Drawings.Name.Text.TextBounds
-			local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
-			local Y = Bounds.Y - TextBounds.Y - 2
-			Drawings.Name:SetPosition(X, Y)
-			Drawings.Name:SetColor(PlayerESP.Name.Color, PlayerESP.Name.Transparency)
-		else
-			Drawings.Name:SetVisible(false)
-		end
+		local TextBounds = Drawings.Name.Text.TextBounds
+		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
+		local Y = Bounds.Y - TextBounds.Y - 2
+		Drawings.Name:SetPosition(X, Y)
+		Drawings.Name:SetColor(PlayerESP.Name.Color, PlayerESP.Name.Transparency)
+	else
+		Drawings.Name:SetVisible(false)
 	end
 end
 
@@ -204,13 +189,13 @@ function PlayerESP:InitPlayer(Player)
 		PlayerDict.Character = Character
 		PlayerDict.Bodyparts = GetValidParts(Character)
 
-		PlayerDict.Connections.DescendantAdded = Character.DescendantAdded:Connect(function(child)
+		PlayerDict.Connections.ChildAdded = Character.ChildAdded:Connect(function(child)
 			if PlayerESP:ValidatePart(child) then
 				table.insert(PlayerDict.Bodyparts, child)
 			end
 		end)
 
-		PlayerDict.Connections.DescendantRemoved = Character.DescendantRemoving:Connect(function(child)
+		PlayerDict.Connections.ChildRemoving = Character.ChildRemoving:Connect(function(child)
 			for i, part in ipairs(PlayerDict.Bodyparts) do
 				if part == child then
 					table.remove(PlayerDict.Bodyparts, i)
@@ -224,14 +209,14 @@ function PlayerESP:InitPlayer(Player)
 		PlayerDict.Character = nil
 		PlayerDict.Bodyparts = {}
 
-		if PlayerDict.Connections.DescendantAdded then
-			PlayerDict.Connections.DescendantAdded:Disconnect()
-			PlayerDict.Connections.DescendantAdded = nil
+		if PlayerDict.Connections.ChildAdded then
+			PlayerDict.Connections.ChildAdded:Disconnect()
+			PlayerDict.Connections.ChildAdded = nil
 		end
 
-		if PlayerDict.Connections.DescendantRemoved then
-			PlayerDict.Connections.DescendantRemoved:Disconnect()
-			PlayerDict.Connections.DescendantRemoved = nil
+		if PlayerDict.Connections.ChildRemoving then
+			PlayerDict.Connections.ChildRemoving:Disconnect()
+			PlayerDict.Connections.ChildRemoving = nil
 		end
 	end)
 end
@@ -260,8 +245,44 @@ function PlayerESP:Start()
 		PlayerESP.Data[Player.Name] = nil
 	end)
 
+	local Info = {
+		List = {},
+		Index = 1,
+		PerFrame = 5,
+		LastUpdate = 0,
+		UpdatePer = 1,
+	}
+
 	local RenderSteppedConnection = RenderStepped:Connect(function()
-		PlayerESP:DrawThread()
+		local Now = tick()
+		if Now - Info.LastUpdate < Info.UpdatePer then
+			return
+		end
+		Info.LastUpdate = Now
+
+		if not PlayerESP.Enabled then
+			for _, Dict in pairs(PlayerESP.Data) do
+				for _, drawing in pairs(Dict.Drawings) do
+					drawing:SetVisible(false)
+				end
+			end
+			return
+		end
+
+		if #Info.List == 0 or Info.Index > #Info.List then
+			Info.List = {}
+			for _, dict in pairs(PlayerESP.Data) do
+				table.insert(Info.List, dict)
+			end
+			Info.Index = 1
+		end
+
+		local Processed = 0
+		while Processed < Info.PerFrame or Info.Index > #Info.List do
+			PlayerESP:DrawPlayer(Info.List[Info.Index])
+			Info.Index += 1
+			Processed += 1
+		end
 	end)
 
 	table.insert(PlayerESP.ScriptConnections, Added)
