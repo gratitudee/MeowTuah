@@ -92,48 +92,39 @@ function PlayerESP:DrawThread()
 	for _, Dictionary in pairs(PlayerESP.Data) do
 		local Player = Dictionary.Player
 		local Character = Dictionary.Character
-		if not Character then
-			for _, Dict in pairs(PlayerESP.Data) do
-				for _, drawing in pairs(Dict.Drawings) do
-					drawing:SetVisible(false)
-				end
-			end
+		local Drawings = Dictionary.Drawings
 
+		if not Character then
+			for _, drawing in pairs(Drawings) do
+				drawing:SetVisible(false)
+			end
 			MeowTuah.Print("No Character!")
 			continue
 		end
 
 		local RootPart = FindFirstChild(Character, "HumanoidRootPart")
 		if not RootPart then
-			for _, Dict in pairs(PlayerESP.Data) do
-				for _, drawing in pairs(Dict.Drawings) do
-					drawing:SetVisible(false)
-				end
+			for _, drawing in pairs(Drawings) do
+				drawing:SetVisible(false)
 			end
 			MeowTuah.Print("No Root!")
 			continue
 		end
 
-		local _, _, Depth = WorldToScreen(RootPart.Position)
-		if Depth <= 0 then
-			for _, Dict in pairs(PlayerESP.Data) do
-				for _, drawing in pairs(Dict.Drawings) do
-					drawing:SetVisible(false)
-				end
+		local _, OnScreen = WorldToScreen(RootPart.Position)
+		if not OnScreen then
+			for _, drawing in pairs(Drawings) do
+				drawing:SetVisible(false)
 			end
 			MeowTuah.Print("On Screen Failed!")
 			continue
 		end
-		--
 
-		local Drawings = Dictionary.Drawings
 		local ValidParts = GetValidParts(Character)
 		local Bounds = ESP:GetBoundingBox(ValidParts)
 		if not Bounds then
-			for _, Dict in pairs(PlayerESP.Data) do
-				for _, drawing in pairs(Dict.Drawings) do
-					drawing:SetVisible(false)
-				end
+			for _, drawing in pairs(Drawings) do
+				drawing:SetVisible(false)
 			end
 			MeowTuah.Print(`No Bounds: {#ValidParts}`)
 			continue
