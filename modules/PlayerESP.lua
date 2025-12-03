@@ -189,11 +189,16 @@ function PlayerESP:GetBoundingBox(Parts)
 		return nil
 	end
 
+	local Width = MaxX - MinX
+	local Height = MaxY - MinY
+	local PadX = Width * 0.23
+	local PadY = Height * 0.17
+
 	return {
-		X = MinX,
-		Y = MinY,
-		W = MaxX - MinX,
-		H = MaxY - MinY,
+		X = MinX - PadX,
+		Y = MinY - PadY,
+		W = Width + PadX * 2,
+		H = Height + PadY * 2,
 	}
 end
 
