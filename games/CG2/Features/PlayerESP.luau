@@ -272,6 +272,10 @@ function PlayerESP:Start()
 		if #Info.List == 0 or Info.Index > #Info.List then
 			Info.List = {}
 			for _, dict in pairs(PlayerESP.Data) do
+				if dict.Player.Name == Player.Name then
+					continue
+				end
+
 				table.insert(Info.List, dict)
 			end
 			Info.Index = 1
