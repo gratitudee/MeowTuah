@@ -1,25 +1,9 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local Workspace = Services.Workspace
-local RunService = Services.RunService
 
 -- Variables
-local Player = Utility.GetPlayer()
 local Camera = Utility.index(Workspace, "CurrentCamera")
 local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
-local Heartbeat = Utility.index(RunService, "Heartbeat")
-local FindFirstChild = Utility.FindFirstChild
-local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
-local GetChildren = Utility.GetChildren
-local CubeCorners = {
-	Vector3.new(-1, -1, -1),
-	Vector3.new(-1, -1, 1),
-	Vector3.new(-1, 1, -1),
-	Vector3.new(-1, 1, 1),
-	Vector3.new(1, -1, -1),
-	Vector3.new(1, -1, 1),
-	Vector3.new(1, 1, -1),
-	Vector3.new(1, 1, 1),
-}
 
 local PlayerESP = {}
 
@@ -162,50 +146,48 @@ function PlayerESP:DrawText()
 end
 
 function PlayerESP:GetBoundingBox(Parts)
-	local MinX, MinY = math.huge, math.huge
-	local MaxX, MaxY = -math.huge, -math.huge
-	local FoundVisible = false
+	local MinX, MinY
+	local MaxX, MaxY
+	local ValidPoints = 0
 
 	for _, Part in ipairs(Parts) do
 		if Part:IsA("BasePart") then
-			local CFrame = Part.CFrame
-			local HalfSize = Part.Size * 0.5
+			local PartPosition = Part.Position
+			local ScreenPosition, OnScreen = WorldToScreen(PartPosition)
 
-			for _, Corner in ipairs(CubeCorners) do
-				local WorldPos = CFrame:PointToWorldSpace(HalfSize * Corner)
-				local ScreenPos, _, Depth = WorldToScreen(WorldPos)
-
-				if Depth > 0 then
-					FoundVisible = true
-
-					local X, Y = ScreenPos.X, ScreenPos.Y
-
-					if X < MinX then
-						MinX = X
-					end
-					if X > MaxX then
-						MaxX = X
-					end
-					if Y < MinY then
-						MinY = Y
-					end
-					if Y > MaxY then
-						MaxY = Y
-					end
+			if ScreenPosition and OnScreen then
+				if not MinX then
+					MinX, MaxX, MinY, MaxY = ScreenPosition.X, ScreenPosition.X, ScreenPosition.Y, ScreenPosition.Y
+				else
+					MinX, MaxX, MinY, MaxY =
+						math.min(MinX, ScreenPosition.X),
+						math.max(MaxX, ScreenPosition.X),
+						math.min(MinY, ScreenPosition.Y),
+						math.max(MaxY, ScreenPosition.Y)
 				end
+
+				ValidPoints += 1
 			end
 		end
 	end
 
-	if not FoundVisible then
+	if not MinX or ValidPoints < 2 then
 		return nil
 	end
 
+	local Width, Height = MaxX - MinX, MaxY - MinY
+	if Width < 4 or Height < 4 then
+		return nil
+	end
+
+	local PadX, PadY = Width * 0.23, Height * 0.17
+	local FinalX, FinalY, FinalW, FinalH = MinX - PadX, MinY - PadY, Width + PadX * 2, Height + PadY * 2
+
 	return {
-		X = MinX,
-		Y = MinY,
-		W = MaxX - MinX,
-		H = MaxY - MinY,
+		X = FinalX,
+		Y = FinalY,
+		W = FinalW,
+		H = FinalH,
 	}
 end
 
