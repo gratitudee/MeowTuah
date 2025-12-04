@@ -365,8 +365,8 @@ return function(self)
 	SaveManager:LoadAutoloadConfig()
 
 	-- F E A T U R E S
-	MeowTuah:SafeCall(AutoParry:Start())
-	MeowTuah:SafeCall(Movement:Start())
-	MeowTuah:SafeCall(PlayerESP:Start())
-	MeowTuah:SafeCall(Trinket:Start())
+	MeowTuah:SafeCall(`AutoParry:Start`, AutoParry:Start())
+	MeowTuah:SafeCall(`Movement:Start`, Movement:Start())
+	MeowTuah:SafeCall(`PlayerESP:Start`, PlayerESP:Start())
+	MeowTuah:SafeCall(`Trinket:Start`, Trinket:Start())
 end
