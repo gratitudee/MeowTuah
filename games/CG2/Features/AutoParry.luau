@@ -31,7 +31,6 @@ function AutoParry:SimulateParry()
 	task.delay(KeyPressDelay, function()
 		AutoParry.State.Parrying = false
 		SendKeyEvent(VirtualInputManager, false, AutoParry.ParryKey, false, nil)
-		MeowTuah.Library:Notify("Parry Sent", 3)
 	end)
 end
 
