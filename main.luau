@@ -57,10 +57,10 @@ return function(Options)
 				end
 			end,
 
-			SafeCall = function(self, ToCall)
+			SafeCall = function(self, idx, ToCall)
 				local s, e = pcall(ToCall)
 				if not s and type(e) == "string" then
-					self:Print(e)
+					self:Print(`- {idx}: {e}`)
 				end
 			end,
 		}
