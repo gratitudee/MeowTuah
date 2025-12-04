@@ -400,6 +400,10 @@ return function(self)
 	local FrameCounter = 0
 	local FPS = 60
 	local WatermarkHeartbeat = Heartbeat:Connect(function(a0: number)
+		if not Toggles.WatermarkToggle.Value then
+			return
+		end
+
 		FrameCounter += 1
 
 		if (tick() - FrameTimer) >= 1 then
