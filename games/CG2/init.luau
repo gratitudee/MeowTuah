@@ -118,6 +118,12 @@ return function(self)
 		Transparency = 0,
 	})
 
+	VisualsLeftGroup:AddToggle("PlayerViewportEnabled", {
+		Text = "[EXP] - Viewport Xray",
+		Default = false,
+		Tooltip = "Enables experimental viewport xray.",
+	})
+
 	local TrinketTabBox = Tabs.Main:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
@@ -277,6 +283,10 @@ return function(self)
 	Options.PlayerChamsOutlineColor:OnChanged(function()
 		PlayerESP.Chams.Outline.Color = Options.PlayerChamsOutlineColor.Value
 		PlayerESP.Chams.Outline.Transparency = Options.PlayerChamsOutlineColor.Transparency
+	end)
+
+	Toggles.PlayerViewportEnabled:OnChanged(function()
+		PlayerESP.ViewportXRay.Enabled = Toggles.PlayerViewportEnabled.Value
 	end)
 
 	Toggles.TrinketESPEnabled:OnChanged(function()
