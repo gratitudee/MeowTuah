@@ -66,7 +66,6 @@ local DefaultConfig = {
 			Connections = {},
 			RayIgnore = {},
 			Clones = {},
-			LastUpdate = 0,
 		},
 	},
 }
@@ -76,7 +75,6 @@ PlayerESP.ScriptConnections = {}
 PlayerESP.Data = {}
 
 --// Constants
-local VIEWPORT_UPDATE_RATE = 1 / 60
 local MAX_VISIBILITY_DISTANCE = 100
 local MIN_BOUNDING_SIZE = 3
 
@@ -367,10 +365,8 @@ function PlayerESP.ViewportXRay:UpdatePlayer(playerDict)
 	end
 
 	local visible = self:IsVisible(char)
-	local now = tick()
-	local shouldUpdateCFrames = (now - objs.LastUpdate) > VIEWPORT_UPDATE_RATE
 
-	if not visible and shouldUpdateCFrames then
+	if not visible then
 		self:UpdateCloneCFrames(char, clone)
 	end
 
@@ -379,10 +375,6 @@ function PlayerESP.ViewportXRay:UpdatePlayer(playerDict)
 			local origTrans = part:GetAttribute("OrigTrans") or 0
 			part.Transparency = (not visible) and origTrans or 1
 		end
-	end
-
-	if shouldUpdateCFrames then
-		objs.LastUpdate = now
 	end
 end
 
