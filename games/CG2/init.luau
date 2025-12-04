@@ -408,7 +408,7 @@ return function(self)
 			FrameCounter = 0
 		end
 
-		Library:SetWatermark(`MEOW TUAH | {self.Name} | {FPS}FPS | `)
+		Library:SetWatermark(`MEOW TUAH | {self.Name} | {FPS}FPS`)
 	end)
 
 	Library:OnUnload(function()
