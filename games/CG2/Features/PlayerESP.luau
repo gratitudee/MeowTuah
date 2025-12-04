@@ -56,6 +56,9 @@ local DefaultConfig = {
 			Transparency = 0,
 		},
 	},
+	ViewportXRay = {
+		Enabled = false,
+	},
 }
 
 local PlayerESP = setmetatable(DefaultConfig, {})
@@ -226,6 +229,13 @@ function PlayerESP:DrawPlayer(Dictionary)
 		Drawings.Chams:SetVisible(false)
 		Drawings.Chams:SetCharacter(nil)
 	end
+
+	if self.ViewportXRay.Enabled and Dictionary.Character then
+		Drawings.ViewportXRay:Update(Dictionary)
+		Drawings.ViewportXRay:SetVisible(true)
+	else
+		Drawings.ViewportXRay:SetVisible(false)
+	end
 end
 
 function PlayerESP:InitPlayer(Player)
@@ -246,6 +256,7 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings.Distance = ESP:DrawText()
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 	PlayerDict.Drawings.Chams = ESP:DrawHighlight()
+	PlayerDict.Drawings.ViewportXRay = ESP:DrawViewportXRay()
 
 	PlayerDict.Character = Player.Character
 	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}
@@ -297,6 +308,20 @@ function PlayerESP:Start()
 			self:InitPlayer(Player)
 		end
 	end
+
+	for _, Data in pairs(self.Data) do
+		if Data.Drawings and Data.Drawings.ViewportXRay then
+			Data.Drawings.ViewportXRay:SetRayIgnore(Utility.index(LocalPlayer, "Character"))
+		end
+	end
+
+	local LocalCharacterAdded = Utility.index(LocalPlayer, "CharacterAdded"):Connect(function(Character)
+		for _, Data in pairs(self.Data) do
+			if Data.Drawings and Data.Drawings.ViewportXRay then
+				Data.Drawings.ViewportXRay:SetRayIgnore(Character)
+			end
+		end
+	end)
 
 	local PlayerAdded = Utility.index(Players, "PlayerAdded"):Connect(function(Player)
 		if Player ~= LocalPlayer then
@@ -378,6 +403,7 @@ function PlayerESP:Start()
 	table.insert(self.ScriptConnections, PlayerAdded)
 	table.insert(self.ScriptConnections, PlayerRemoving)
 	table.insert(self.ScriptConnections, RenderConnection)
+	table.insert(self.ScriptConnections, LocalCharacterAdded)
 end
 
 function PlayerESP:Stop()

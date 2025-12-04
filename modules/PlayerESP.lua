@@ -4,6 +4,8 @@ local CoreGui = gethui and gethui() or Services.CoreGui
 
 -- Variables
 local Camera = Utility.index(Workspace, "CurrentCamera")
+local FindFirstChild = Utility.FindFirstChild
+local GetDescendants = Utility.GetDescendants
 local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
 local CubeCorners = {
 	Vector3.new(0, -1, -1),
@@ -234,6 +236,212 @@ function PlayerESP:GetBoundingBox(Parts)
 		Y = MinY - PadY,
 		W = Width + PadX * 2,
 		H = Height + PadY * 2,
+	}
+end
+
+function PlayerESP:DrawViewportXRay()
+	local ScreenUI = FindFirstChild(CoreGui, "VPXray")
+	if not ScreenUI then
+		ScreenUI = Instance.new("ScreenGui")
+		ScreenUI.Name = "VPXray"
+		ScreenUI.Parent = CoreGui
+		ScreenUI.IgnoreGuiInset = true
+		ScreenUI.ResetOnSpawn = false
+		ScreenUI.DisplayOrder = math.huge
+	end
+
+	local ViewportFrame = FindFirstChild(ScreenUI, "VPXrayFrame")
+	if not ViewportFrame then
+		ViewportFrame = Instance.new("ViewportFrame")
+		ViewportFrame.Name = "VPXrayFrame"
+		ViewportFrame.Size = UDim2.fromScale(1, 1)
+		ViewportFrame.BackgroundTransparency = 1
+		ViewportFrame.LightDirection = Vector3.new(-1, -1, -1)
+		ViewportFrame.Ambient = Color3.fromRGB(120, 120, 120)
+		ViewportFrame.Parent = ScreenUI
+	end
+
+	local ViewportCamera = FindFirstChild(ViewportFrame, "VPCamera")
+	if not ViewportCamera then
+		ViewportCamera = Instance.new("Camera")
+		ViewportCamera.Name = "VPCamera"
+		ViewportCamera.FieldOfView = 70
+		ViewportFrame.CurrentCamera = ViewportCamera
+	end
+
+	return {
+		ScreenUI = ScreenUI,
+		ViewportFrame = ViewportFrame,
+		ViewportCamera = ViewportCamera,
+		ViewportModel = nil,
+		LastCharacter = nil,
+		RayIgnore = {},
+
+		SetVisible = function(self, state)
+			self.ScreenUI.Enabled = state
+			if not state and self.ViewportModel then
+				self:Remove()
+			end
+		end,
+
+		SetRayIgnore = function(self, object)
+			self.RayIgnore[1] = object
+		end,
+
+		Update = function(self, dictionary)
+			if not self.ScreenUI.Enabled then
+				return
+			end
+
+			self.ViewportCamera.CFrame = Camera.CFrame
+
+			local Character = dictionary.Character
+			if not Character then
+				if self.ViewportModel then
+					self:Remove()
+				end
+				return
+			end
+
+			if Character ~= self.LastCharacter then
+				self:__RefreshViewportModel(Character)
+				self.LastCharacter = Character
+			end
+
+			if not self.ViewportModel then
+				self:__GetNewViewportModel(Character)
+			end
+
+			self:__UpdateCloneCFrames(Character)
+
+			local visible = self:__IsVisible(Character)
+			self:SetTransparencyBasedOnVisibility(visible)
+		end,
+
+		__IsVisible = function(self, character)
+			if not character then
+				return false
+			end
+
+			local hrp = FindFirstChild(character, "HumanoidRootPart")
+			if not hrp then
+				return false
+			end
+
+			local cam = Camera
+			local pos = hrp.Position
+			local camPos = cam.CFrame.Position
+
+			local _, onScreen = WorldToScreen(pos)
+			if not onScreen then
+				return false
+			end
+
+			local distance = (pos - camPos).Magnitude
+			if distance > 500 then
+				return false
+			end
+
+			local direction = (pos - camPos)
+			local params = RaycastParams.new()
+			params.FilterDescendantsInstances = self.RayIgnore
+			params.FilterType = Enum.RaycastFilterType.Exclude
+
+			local result = Workspace:Raycast(camPos, direction, params)
+			return not result or result.Instance:IsDescendantOf(character)
+		end,
+
+		SetTransparencyBasedOnVisibility = function(self, visible)
+			if not self.ViewportModel then
+				return
+			end
+
+			for _, part in pairs(self.ViewportModel:GetDescendants()) do
+				if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
+					part.LocalTransparencyModifier = visible and 1 or 0
+				end
+			end
+		end,
+
+		__UpdateCloneCFrames = function(self, character)
+			if not character or not self.ViewportModel then
+				return
+			end
+
+			for _, part in pairs(character:GetDescendants()) do
+				if part:IsA("BasePart") then
+					local clonePart = self.ViewportModel:FindFirstChild(part.Name, true)
+					if clonePart and clonePart:IsA("BasePart") then
+						clonePart.CFrame = part.CFrame
+					end
+				end
+			end
+
+			for _, obj in pairs(character:GetChildren()) do
+				if obj:IsA("Accessory") or obj:IsA("Tool") then
+					local cloneObj = self.ViewportModel:FindFirstChild(obj.Name)
+					if cloneObj then
+						for _, part in pairs(obj:GetDescendants()) do
+							if part:IsA("BasePart") then
+								local clonePart = cloneObj:FindFirstChild(part.Name, true)
+								if clonePart and clonePart:IsA("BasePart") then
+									clonePart.CFrame = part.CFrame
+								end
+							end
+						end
+					else
+						self:__RefreshViewportModel(character)
+						return
+					end
+				end
+			end
+		end,
+
+		__GetNewViewportModel = function(self, character)
+			if self.ViewportModel then
+				return self.ViewportModel
+			end
+
+			if character and character.PrimaryPart then
+				character.Archivable = true
+				self.ViewportModel = character:Clone()
+				character.Archivable = false
+
+				for _, object in pairs(self.ViewportModel:GetDescendants()) do
+					if object:IsA("BasePart") then
+						object.Anchored = true
+						object.CanTouch = false
+						object.CanQuery = false
+						object.CastShadow = false
+						object.Massless = true
+					elseif object:IsA("Decal") or object:IsA("Texture") then
+					elseif object:IsA("LocalScript") or object:IsA("Script") or object:IsA("ModuleScript") then
+						object:Destroy()
+					end
+				end
+
+				self.ViewportModel.Parent = self.ViewportFrame
+			end
+
+			return self.ViewportModel
+		end,
+
+		__RefreshViewportModel = function(self, character)
+			if self.ViewportModel then
+				self.ViewportModel:Destroy()
+				self.ViewportModel = nil
+			end
+			self:__GetNewViewportModel(character)
+		end,
+
+		Remove = function(self)
+			if self.ViewportModel then
+				self.ViewportModel:Destroy()
+				self.ViewportModel = nil
+			end
+
+			self.LastCharacter = nil
+		end,
 	}
 end
 
