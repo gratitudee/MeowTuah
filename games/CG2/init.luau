@@ -1,4 +1,3 @@
-local Visuals = require("./Universal/Features/Visuals")
 local Base = "games/CG2/Features"
 local AutoParry, Movement, PlayerESP, Trinket =
 	LoadModule(`{Base}/AutoParry.luau`),
@@ -104,13 +103,13 @@ return function(self)
 		Tooltip = "Enables Chams ESP",
 	})
 
-	Visuals:AddLabel("Chams Fill Colour"):AddColorPicker("PlayerChamsFillColor", {
+	VisualsLeftGroup:AddLabel("Chams Fill Colour"):AddColorPicker("PlayerChamsFillColor", {
 		Default = Color3.new(1, 1, 1),
 		Title = "Chams Fill Color",
 		Transparency = 0.75,
 	})
 
-	Visuals:AddLabel("Chams Outline Colour"):AddColorPicker("PlayerChamsOutlineColor", {
+	VisualsLeftGroup:AddLabel("Chams Outline Colour"):AddColorPicker("PlayerChamsOutlineColor", {
 		Default = Color3.new(0, 0, 0),
 		Title = "Chams Outline Color",
 		Transparency = 0,
