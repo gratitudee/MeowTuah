@@ -312,10 +312,11 @@ function PlayerESP:DrawViewportXRay()
 				self:__GetNewViewportModel(Character)
 			end
 
-			self:__UpdateCloneCFrames(Character)
-
 			local visible = self:__IsVisible(Character)
 			self:SetTransparencyBasedOnVisibility(visible)
+			if not visible then
+				self:__UpdateCloneCFrames(Character)
+			end
 		end,
 
 		__IsVisible = function(self, character)
