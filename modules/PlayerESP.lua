@@ -265,8 +265,9 @@ function PlayerESP:DrawViewportXRay()
 	if not ViewportCamera then
 		ViewportCamera = Instance.new("Camera")
 		ViewportCamera.Name = "VPCamera"
-		ViewportCamera.FieldOfView = 70
+		ViewportCamera.FieldOfView = Camera.FieldOfView
 		ViewportFrame.CurrentCamera = ViewportCamera
+		ViewportCamera.Parent = ViewportCamera
 	end
 
 	return {
@@ -415,7 +416,6 @@ function PlayerESP:DrawViewportXRay()
 						object.CanQuery = false
 						object.CastShadow = false
 						object.Massless = true
-					elseif object:IsA("Decal") or object:IsA("Texture") then
 					elseif object:IsA("LocalScript") or object:IsA("Script") or object:IsA("ModuleScript") then
 						object:Destroy()
 					end
