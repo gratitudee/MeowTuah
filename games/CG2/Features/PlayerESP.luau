@@ -580,9 +580,9 @@ function PlayerESP:InitPlayer(Player)
 				table.insert(PlayerDict.Bodyparts, Child)
 			end
 
-			if (Child:IsA("Accessory") or Child:IsA("Tool")) and self.ViewportXRay and self.ViewportXRay.Enabled then
+			task.defer(function()
 				self.ViewportXRay:RefreshCharacterClone(Player)
-			end
+			end)
 		end)
 
 		PlayerDict.Connections.ChildRemoving = Character.ChildRemoved:Connect(function(Child)
@@ -593,9 +593,9 @@ function PlayerESP:InitPlayer(Player)
 				end
 			end
 
-			if (Child:IsA("Accessory") or Child:IsA("Tool")) and self.ViewportXRay and self.ViewportXRay.Enabled then
+			task.defer(function()
 				self.ViewportXRay:RefreshCharacterClone(Player)
-			end
+			end)
 		end)
 	end)
 
