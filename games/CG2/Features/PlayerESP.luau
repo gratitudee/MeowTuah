@@ -138,8 +138,6 @@ function PlayerESP.ViewportXRay:Init()
 		return
 	end
 
-	self:Cleanup()
-
 	objs.ScreenUI = Instance.new("ScreenGui")
 	objs.ScreenUI.Name = "ViewportESP"
 	objs.ScreenUI.ResetOnSpawn = false
@@ -324,11 +322,13 @@ function PlayerESP.ViewportXRay:UpdateCloneCFrames(character, clone)
 	end
 end
 
-function PlayerESP.ViewportXRay:Update()
+function PlayerESP.ViewportXRay:UpdatePlayer(playerDict)
 	if not PlayerESP.Enabled or not self.Enabled then
-		if self.Objects and next(self.Objects.Clones or {}) then
-			self:ClearAll()
-		end
+		return
+	end
+
+	local player = playerDict.Player
+	if not player or player == LocalPlayer then
 		return
 	end
 
@@ -348,44 +348,36 @@ function PlayerESP.ViewportXRay:Update()
 		objs.Camera.CFrame = cam.CFrame
 	end
 
+	local char = playerDict.Character
+	local clone = objs.Clones[player]
+
+	if not char then
+		if clone then
+			self:ClearPlayer(player)
+		end
+		return
+	end
+
+	if not clone or not clone.Parent then
+		self:RefreshCharacterClone(player)
+		clone = objs.Clones[player]
+		if not clone then
+			return
+		end
+	end
+
+	local visible = self:IsVisible(char)
 	local now = tick()
 	local shouldUpdateCFrames = (now - objs.LastUpdate) > VIEWPORT_UPDATE_RATE
 
-	for _, dict in pairs(PlayerESP.Data) do
-		local player = dict.Player
-		if not player or player == LocalPlayer then
-			continue
-		end
+	if not visible and shouldUpdateCFrames then
+		self:UpdateCloneCFrames(char, clone)
+	end
 
-		local char = dict.Character
-		local clone = objs.Clones[player]
-
-		if not char then
-			if clone then
-				self:ClearPlayer(player)
-			end
-			continue
-		end
-
-		if not clone or not clone.Parent then
-			self:RefreshCharacterClone(player)
-			clone = objs.Clones[player]
-			if not clone then
-				continue
-			end
-		end
-
-		local visible = self:IsVisible(char)
-
-		if not visible and shouldUpdateCFrames then
-			self:UpdateCloneCFrames(char, clone)
-		end
-
-		for _, part in pairs(clone:GetDescendants()) do
-			if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
-				local origTrans = part:GetAttribute("OrigTrans") or 0
-				part.Transparency = (not visible) and origTrans or 1
-			end
+	for _, part in pairs(clone:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
+			local origTrans = part:GetAttribute("OrigTrans") or 0
+			part.Transparency = (not visible) and origTrans or 1
 		end
 	end
 
@@ -427,7 +419,6 @@ function PlayerESP.ViewportXRay:Cleanup()
 	objs.LastUpdate = 0
 end
 
---// Core ESP Functions
 function PlayerESP:ValidatePart(Part)
 	if not Part or typeof(Part) ~= "Instance" then
 		return false
@@ -449,6 +440,10 @@ function PlayerESP:DrawPlayer(Dictionary)
 	local Character = Dictionary.Character
 	local Drawings = Dictionary.Drawings
 	local Bodyparts = Dictionary.Bodyparts
+
+	if self.ViewportXRay and self.ViewportXRay.Enabled then
+		self.ViewportXRay:UpdatePlayer(Dictionary)
+	end
 
 	if not Character then
 		HideAllDrawings(Drawings)
@@ -689,8 +684,9 @@ function PlayerESP:Start()
 		RenderInfo.LastUpdate = Now
 
 		if not self.Enabled then
-			if self.ViewportXRay and self.ViewportXRay.Objects then
+			if self.ViewportXRay then
 				self.ViewportXRay:ClearAll()
+				self.ViewportXRay:Cleanup()
 			end
 
 			for _, Dict in pairs(self.Data) do
@@ -700,8 +696,11 @@ function PlayerESP:Start()
 			return
 		end
 
-		if self.ViewportXRay and self.ViewportXRay.Enabled then
-			self.ViewportXRay:Update()
+		if self.ViewportXRay and self.ViewportXRay.Enabled and not self.ViewportXRay.Objects.ViewportFrame then
+			self.ViewportXRay:Init()
+		elseif self.ViewportXRay and not self.ViewportXRay.Enabled then
+			self.ViewportXRay:ClearAll()
+			self.ViewportXRay:Cleanup()
 		end
 
 		if #RenderInfo.List == 0 or RenderInfo.Index > #RenderInfo.List then
