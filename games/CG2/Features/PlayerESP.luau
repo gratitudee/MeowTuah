@@ -66,6 +66,7 @@ local DefaultConfig = {
 			Connections = {},
 			RayIgnore = {},
 			Clones = {},
+			LastUpdate = 0,
 		},
 	},
 }
@@ -158,6 +159,7 @@ function PlayerESP.ViewportXRay:Init()
 	objs.Clones = {}
 	objs.Connections = {}
 	objs.RayIgnore = { LocalPlayer.Character or Instance.new("Model") }
+	objs.LastUpdate = 0
 
 	local charAddedConn = Utility.index(LocalPlayer, "CharacterAdded"):Connect(function(char)
 		objs.RayIgnore[1] = char
@@ -407,6 +409,7 @@ function PlayerESP.ViewportXRay:Cleanup()
 
 	objs.Clones = {}
 	objs.RayIgnore = {}
+	objs.LastUpdate = 0
 end
 
 function PlayerESP:ValidatePart(Part)
@@ -719,6 +722,7 @@ function PlayerESP:Start()
 	table.insert(self.ScriptConnections, PlayerAdded)
 	table.insert(self.ScriptConnections, PlayerRemoving)
 	table.insert(self.ScriptConnections, RenderConnection)
+	print("INIT V1")
 end
 
 function PlayerESP:Stop()
