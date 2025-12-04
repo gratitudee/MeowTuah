@@ -8,6 +8,9 @@ return function(self)
 	local Library = MeowTuah.Library
 	local SaveManager = MeowTuah.SaveManager
 	local ThemeManager = MeowTuah.ThemeManager
+	local Services, Utility = MeowTuah.Services, MeowTuah.Utility
+	local RunService = Services.RunService
+	local Heartbeat = Utility.index(RunService, "Heartbeat")
 
 	local MainWindow = Library:CreateWindow({
 		Title = `{self.Name} | MEOW TUAH`,
@@ -113,12 +116,6 @@ return function(self)
 		Default = Color3.new(0, 0, 0),
 		Title = "Chams Outline Color",
 		Transparency = 0,
-	})
-
-	VisualsLeftGroup:AddToggle("PlayerExperimentalChamsEnabled", {
-		Text = "[EXP] Hidden Chams",
-		Default = false,
-		Tooltip = "Enables Reverse Occlusion Chams",
 	})
 
 	local TrinketTabBox = Tabs.Main:AddRightTabbox()
@@ -282,10 +279,6 @@ return function(self)
 		PlayerESP.Chams.Outline.Transparency = Options.PlayerChamsOutlineColor.Transparency
 	end)
 
-	Toggles.PlayerExperimentalChamsEnabled:OnChanged(function()
-		PlayerESP.Chams.ExperimentalOcclusionMode = Toggles.PlayerExperimentalChamsEnabled.Value
-	end)
-
 	Toggles.TrinketESPEnabled:OnChanged(function()
 		Trinket.ESP.Enabled = Toggles.TrinketESPEnabled.Value
 	end)
@@ -348,31 +341,13 @@ return function(self)
 		end
 	end)
 
-	Library:OnUnload(function()
-		AutoParry:Stop()
-		Movement:Stop()
-		PlayerESP:Stop()
-		Trinket:Stop()
-		Library.Unloaded = true
-	end)
-
 	local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu")
 	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
 		Default = "Z",
 		NoUI = true,
 		Text = "Menu keybind",
 	})
-
 	Library.ToggleKeybind = Options.MenuKeybind
-
-	MenuGroup:AddToggle("KeybindListToggle", {
-		Text = "Show Keybinds",
-		Default = false,
-		Tooltip = "Shows the keybind frame.",
-		Callback = function(Value)
-			Library.KeybindFrame.Visible = Value
-		end,
-	})
 
 	MenuGroup:AddDropdown("FontSelectionDropdown", {
 		Values = { "UI", "System", "Plex", "Monospace" },
@@ -386,6 +361,28 @@ return function(self)
 		end,
 	})
 
+	MenuGroup:AddDivider()
+
+	MenuGroup:AddToggle("KeybindListToggle", {
+		Text = "Show Keybinds",
+		Default = false,
+		Tooltip = "Shows the keybind frame.",
+		Callback = function(Value)
+			Library.KeybindFrame.Visible = Value
+		end,
+	})
+
+	MenuGroup:AddToggle("WatermarkToggle", {
+		Text = "Show Watermark",
+		Default = false,
+		Tooltip = "Shows the watermark.",
+		Callback = function(Value)
+			Library:SetWatermarkVisibility(Value)
+		end,
+	})
+
+	MenuGroup:AddDivider()
+
 	MenuGroup:AddButton("Unload", function()
 		Library:Unload()
 	end)
@@ -398,6 +395,30 @@ return function(self)
 	SaveManager:BuildConfigSection(Tabs.Settings)
 	ThemeManager:ApplyToTab(Tabs.Settings)
 	SaveManager:LoadAutoloadConfig()
+
+	local FrameTimer = tick()
+	local FrameCounter = 0
+	local FPS = 60
+	local WatermarkHeartbeat = Heartbeat:Connect(function(a0: number)
+		FrameCounter += 1
+
+		if (tick() - FrameTimer) >= 1 then
+			FPS = FrameCounter
+			FrameTimer = tick()
+			FrameCounter = 0
+		end
+
+		Library:SetWatermark(`MEOW TUAH | {self.Name} | {FPS}FPS | `)
+	end)
+
+	Library:OnUnload(function()
+		WatermarkHeartbeat:Disconnect()
+		AutoParry:Stop()
+		Movement:Stop()
+		PlayerESP:Stop()
+		Trinket:Stop()
+		Library.Unloaded = true
+	end)
 
 	MeowTuah:SafeCall("AutoParry:Start", AutoParry:Start())
 	MeowTuah:SafeCall("Movement:Start", Movement:Start())

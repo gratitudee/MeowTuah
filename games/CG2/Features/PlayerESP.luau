@@ -18,10 +18,8 @@ local DrawingFonts = {
 
 local DefaultConfig = {
 	Enabled = false,
-	AliveCheck = false,
 	Font = "UI",
 	Size = 18,
-	MaxDistance = 250,
 
 	Box = {
 		Enabled = false,
