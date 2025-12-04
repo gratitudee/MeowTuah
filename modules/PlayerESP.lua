@@ -331,9 +331,8 @@ function PlayerESP:DrawViewportXRay()
 				return false
 			end
 
-			local cam = Camera
 			local pos = hrp.Position
-			local camPos = cam.CFrame.Position
+			local camPos = Camera.CFrame.Position
 
 			local _, onScreen = WorldToScreen(pos)
 			if not onScreen then
@@ -341,7 +340,7 @@ function PlayerESP:DrawViewportXRay()
 			end
 
 			local distance = (pos - camPos).Magnitude
-			if distance > 500 then
+			if distance > 250 then
 				return false
 			end
 
