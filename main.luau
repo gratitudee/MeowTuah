@@ -59,7 +59,7 @@ return function(Options)
 
 			SafeCall = function(self, ToCall)
 				local s, e = pcall(ToCall)
-				if not s then
+				if not s and type(e) == "string" then
 					self:Print(e)
 				end
 			end,
