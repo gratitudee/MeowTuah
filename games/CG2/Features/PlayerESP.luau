@@ -4,10 +4,11 @@ local Players = Services.Players
 local Workspace = Services.Workspace
 local RunService = Services.RunService
 
-local Player = Utility.GetPlayer()
+local LocalPlayer = Utility.GetPlayer()
 local RenderStepped = Utility.index(RunService, "RenderStepped")
 local PlayerAdded, PlayerRemoving = Utility.index(Players, "PlayerAdded"), Utility.index(Players, "PlayerRemoving")
 local FindFirstChild = Utility.FindFirstChild
+local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 local GetChildren = Utility.GetChildren
 local Camera = Utility.index(Workspace, "CurrentCamera")
 local WorldToViewportPoint = Utility.index(Camera, "WorldToViewportPoint")
@@ -101,6 +102,14 @@ function PlayerESP:DrawPlayer(Dictionary)
 		return
 	end
 
+	local Distance = "[???m]"
+	local LocalPlayerCharacter = Utility.GetCharacter(LocalPlayer)
+	local HumanoidRootPart = LocalPlayerCharacter and FindFirstChild(LocalPlayerCharacter, "HumanoidRootPart") or nil
+	if HumanoidRootPart then
+		local DistanceNumber = (HumanoidRootPart.Position - RootPart.Position).Magnitude
+		Distance = `[{tostring(DistanceNumber)}m]`
+	end
+
 	local _, OnScreen = WorldToScreen(RootPart.Position)
 	if not OnScreen then
 		for _, drawing in pairs(Drawings) do
@@ -144,6 +153,44 @@ function PlayerESP:DrawPlayer(Dictionary)
 	else
 		Drawings.Name:SetVisible(false)
 	end
+
+	local BottomY = Bounds.Y + Bounds.H
+	if PlayerESP.Distance.Enabled then
+		Drawings.Distance:SetText(Distance)
+		Drawings.Distance.Text.Font = GetFont(PlayerESP.Font)
+		Drawings.Distance.Text.Size = PlayerESP.Size
+
+		local TextBounds = Drawings.Distance.Text.TextBounds
+		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
+		local Y = BottomY + 2
+
+		Drawings.Distance:SetPosition(X, Y)
+		Drawings.Distance:SetColor(PlayerESP.Distance.Color, PlayerESP.Distance.Transparency)
+		Drawings.Distance:SetVisible(true)
+
+		BottomY = Y + TextBounds.Y
+	else
+		Drawings.Distance:SetVisible(false)
+	end
+
+	-- HEALTH TEXT
+	if PlayerESP["Health Text"].Enabled then
+		local Health, MaxHealth = Dictionary.Humanoid.Health, Dictionary.Humanoid.MaxHealth
+		local HealthText = `[{tostring(Health)}/{tostring(MaxHealth)}`
+		Drawings["Health Text"]:SetText(HealthText)
+		Drawings["Health Text"].Text.Font = GetFont(PlayerESP.Font)
+		Drawings["Health Text"].Text.Size = PlayerESP.Size
+
+		local TextBounds = Drawings["Health Text"].Text.TextBounds
+		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
+		local Y = BottomY + 2
+
+		Drawings["Health Text"]:SetPosition(X, Y)
+		Drawings["Health Text"]:SetColor(PlayerESP["Health Text"].Color, PlayerESP["Health Text"].Transparency)
+		Drawings["Health Text"]:SetVisible(true)
+	else
+		Drawings["Health Text"]:SetVisible(false)
+	end
 end
 
 function PlayerESP:ValidatePart(Part)
@@ -170,6 +217,7 @@ function PlayerESP:InitPlayer(Player)
 	PlayerESP.Data[Player.Name] = {
 		Player = Player,
 		Character = nil,
+		Humanoid = nil,
 		Bodyparts = {},
 		Connections = {},
 		Drawings = {},
@@ -185,8 +233,10 @@ function PlayerESP:InitPlayer(Player)
 
 	PlayerDict.Character = Player.Character
 	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}
+	PlayerDict.Humanoid = PlayerDict.Character and FindFirstChildWhichIsA(PlayerDict.Character, "Humanoid", false)
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
 		PlayerDict.Character = Character
+		PlayerDict.Humanoid = PlayerDict.Character and FindFirstChildWhichIsA(PlayerDict.Character, "Humanoid", false)
 		PlayerDict.Bodyparts = GetValidParts(Character)
 
 		PlayerDict.Connections.ChildAdded = Character.ChildAdded:Connect(function(child)
@@ -272,7 +322,7 @@ function PlayerESP:Start()
 		if #Info.List == 0 or Info.Index > #Info.List then
 			Info.List = {}
 			for _, dict in pairs(PlayerESP.Data) do
-				if dict.Player.Name == Player.Name then
+				if dict.Player.Name == LocalPlayer.Name then
 					continue
 				end
 
