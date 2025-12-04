@@ -1,12 +1,14 @@
 local Base = "games/CG2/Features"
-local AutoParry, Movement, PlayerESP, Trinket =
-	LoadModule(`{Base}/AutoParry.luau`),
-	LoadModule(`{Base}/Movement.luau`),
-	LoadModule(`{Base}/PlayerESP.luau`),
-	LoadModule(`{Base}/Trinket.luau`)
+local AutoParry = LoadModule(`{Base}/AutoParry.luau`)
+local Movement = LoadModule(`{Base}/Movement.luau`)
+local PlayerESP = LoadModule(`{Base}/PlayerESP.luau`)
+local Trinket = LoadModule(`{Base}/Trinket.luau`)
 
 return function(self)
-	local Library, SaveManager, ThemeManager = MeowTuah.Library, MeowTuah.SaveManager, MeowTuah.ThemeManager
+	local Library = MeowTuah.Library
+	local SaveManager = MeowTuah.SaveManager
+	local ThemeManager = MeowTuah.ThemeManager
+
 	local MainWindow = Library:CreateWindow({
 		Title = `{self.Name} | MEOW TUAH`,
 		Center = true,
@@ -15,12 +17,11 @@ return function(self)
 	})
 
 	local Tabs = {
-		["Main"] = MainWindow:AddTab("Main"),
-		["Settings"] = MainWindow:AddTab("Settings"),
+		Main = MainWindow:AddTab("Main"),
+		Settings = MainWindow:AddTab("Settings"),
 	}
 
-	-- Auto Parry Stuff
-	local AutoParryLeftGroup = Tabs["Main"]:AddLeftGroupbox("Auto Parry Main")
+	local AutoParryLeftGroup = Tabs.Main:AddLeftGroupbox("Auto Parry Main")
 	AutoParryLeftGroup:AddLabel("Enable Auto Parry"):AddKeyPicker("AutoParryKeyPicker", {
 		Default = "E",
 		SyncToggleState = false,
@@ -38,8 +39,7 @@ return function(self)
 		Compact = false,
 	})
 
-	-- Visual Stuff
-	local VisualsLeftGroup = Tabs["Main"]:AddLeftGroupbox("Player Visuals")
+	local VisualsLeftGroup = Tabs.Main:AddLeftGroupbox("Player Visuals")
 
 	VisualsLeftGroup:AddToggle("PlayerESPEnabled", {
 		Text = "Enable",
@@ -115,8 +115,13 @@ return function(self)
 		Transparency = 0,
 	})
 
-	-- Trinket Stuff
-	local TrinketTabBox = Tabs["Main"]:AddRightTabbox()
+	VisualsLeftGroup:AddToggle("PlayerExperimentalChamsEnabled", {
+		Text = "[EXP] Hidden Chams",
+		Default = false,
+		Tooltip = "Enables Reverse Occlusion Chams",
+	})
+
+	local TrinketTabBox = Tabs.Main:AddRightTabbox()
 	local TrinketVisualsTab = TrinketTabBox:AddTab("Trinket Visuals")
 	local TrinketAutograbTab = TrinketTabBox:AddTab("Trinket Auto Grab")
 
@@ -186,7 +191,6 @@ return function(self)
 		Compact = false,
 	})
 
-	-- Movement Stuff
 	local MovementRightGroupBox = Tabs.Main:AddRightGroupbox("Movement")
 	MovementRightGroupBox:AddLabel("Enable Auto Slide"):AddKeyPicker("AutoSlideKeyPicker", {
 		Default = "G",
@@ -196,8 +200,6 @@ return function(self)
 		NoUI = false,
 	})
 
-	-- Callback Stuff
-	-- Auto Parry Callbacks
 	Options.AutoParryKeyPicker:OnClick(function(Value)
 		AutoParry.Enabled = Value
 	end)
@@ -217,7 +219,6 @@ return function(self)
 		AutoParry.MaxDistance = Options.AutoParryMaxDistance.Value
 	end)
 
-	-- Visual Callbacks
 	Toggles.PlayerESPEnabled:OnChanged(function()
 		PlayerESP.Enabled = Toggles.PlayerESPEnabled.Value
 	end)
@@ -281,7 +282,10 @@ return function(self)
 		PlayerESP.Chams.Outline.Transparency = Options.PlayerChamsOutlineColor.Transparency
 	end)
 
-	-- Trinket Callbacks
+	Toggles.PlayerExperimentalChamsEnabled:OnChanged(function()
+		PlayerESP.Chams.ExperimentalOcclusionMode = Toggles.PlayerExperimentalChamsEnabled.Value
+	end)
+
 	Toggles.TrinketESPEnabled:OnChanged(function()
 		Trinket.ESP.Enabled = Toggles.TrinketESPEnabled.Value
 	end)
@@ -329,7 +333,6 @@ return function(self)
 		Trinket.ESP.Value.Transparency = Options.TrinketValueColor.Transparency
 	end)
 
-	-- Movement Callbacks
 	Options.AutoSlideKeyPicker:OnClick(function(Value)
 		Movement.AutoSlideKeyPicker.Enabled = Value
 	end)
@@ -345,7 +348,6 @@ return function(self)
 		end
 	end)
 
-	-- Settings Stuff
 	Library:OnUnload(function()
 		AutoParry:Stop()
 		Movement:Stop()
@@ -355,14 +357,18 @@ return function(self)
 	end)
 
 	local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu")
-	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "Z", NoUI = true, Text = "Menu keybind" })
+	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
+		Default = "Z",
+		NoUI = true,
+		Text = "Menu keybind",
+	})
+
 	Library.ToggleKeybind = Options.MenuKeybind
 
 	MenuGroup:AddToggle("KeybindListToggle", {
 		Text = "Show Keybinds",
 		Default = false,
 		Tooltip = "Shows the keybind frame.",
-
 		Callback = function(Value)
 			Library.KeybindFrame.Visible = Value
 		end,
@@ -372,10 +378,8 @@ return function(self)
 		Values = { "UI", "System", "Plex", "Monospace" },
 		Default = 1,
 		Multi = false,
-
 		Text = "Font Selection",
 		Tooltip = "The Font Text ESP Uses.",
-
 		Callback = function(Value)
 			Trinket.ESP.Font = Value
 			PlayerESP.Font = Value
@@ -386,7 +390,6 @@ return function(self)
 		Library:Unload()
 	end)
 
-	-- M A N A G E R S . . .
 	SaveManager:SetLibrary(Library)
 	ThemeManager:SetLibrary(Library)
 	SaveManager:IgnoreThemeSettings()
@@ -396,9 +399,8 @@ return function(self)
 	ThemeManager:ApplyToTab(Tabs.Settings)
 	SaveManager:LoadAutoloadConfig()
 
-	-- F E A T U R E S
-	MeowTuah:SafeCall(`AutoParry:Start`, AutoParry:Start())
-	MeowTuah:SafeCall(`Movement:Start`, Movement:Start())
-	MeowTuah:SafeCall(`PlayerESP:Start`, PlayerESP:Start())
-	MeowTuah:SafeCall(`Trinket:Start`, Trinket:Start())
+	MeowTuah:SafeCall("AutoParry:Start", AutoParry:Start())
+	MeowTuah:SafeCall("Movement:Start", Movement:Start())
+	MeowTuah:SafeCall("PlayerESP:Start", PlayerESP:Start())
+	MeowTuah:SafeCall("Trinket:Start", Trinket:Start())
 end

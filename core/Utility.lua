@@ -33,6 +33,7 @@ Utils.index = rawDatamodel.__index
 Utils.newindex = rawDatamodel.__newindex
 Utils._GetService = Utils.index(game, "GetService")
 Utils.GetChildren = Utils.index(game, "GetChildren")
+Utils.GetDescendants = Utils.index(game, "GetDescendants")
 Utils.FindFirstChild = Utils.index(game, "FindFirstChild")
 Utils.FindFirstChildOfClass = Utils.index(game, "FindFirstChildOfClass")
 Utils.FindFirstChildWhichIsA = Utils.index(game, "FindFirstChildWhichIsA")
