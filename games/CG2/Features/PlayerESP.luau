@@ -305,7 +305,7 @@ function PlayerESP.ViewportXRay:UpdateCloneCFrames(character, clone)
 	end
 
 	for _, obj in pairs(character:GetChildren()) do
-		if obj:IsA("Accessory") or obj:IsA("Tool") then
+		if obj:IsA("Accessory") then
 			local cloneObj = clone:FindFirstChild(obj.Name)
 			if cloneObj then
 				for _, part in pairs(obj:GetDescendants()) do
