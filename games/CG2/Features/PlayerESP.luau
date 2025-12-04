@@ -722,7 +722,7 @@ function PlayerESP:Start()
 	table.insert(self.ScriptConnections, PlayerAdded)
 	table.insert(self.ScriptConnections, PlayerRemoving)
 	table.insert(self.ScriptConnections, RenderConnection)
-	print("INIT V1")
+	print("INIT V2")
 end
 
 function PlayerESP:Stop()
