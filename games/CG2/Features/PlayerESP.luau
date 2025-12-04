@@ -314,19 +314,6 @@ function PlayerESP.ViewportXRay:UpdateCloneCFrames(character, clone)
 						end
 					end
 				end
-			else
-				self:RefreshCharacterClone(character.Parent)
-				return
-			end
-		end
-	end
-
-	for _, cloneObj in pairs(clone:GetChildren()) do
-		if (cloneObj:IsA("Accessory") or cloneObj:IsA("Tool")) and cloneObj.Name ~= "HumanoidRootPart" then
-			local characterObj = character:FindFirstChild(cloneObj.Name)
-			if not characterObj then
-				self:RefreshCharacterClone(character.Parent)
-				return
 			end
 		end
 	end
@@ -377,7 +364,10 @@ function PlayerESP.ViewportXRay:UpdatePlayer(playerDict)
 	end
 
 	local visible = self:IsVisible(char)
-	self:UpdateCloneCFrames(char, clone)
+
+	if not visible then
+		self:UpdateCloneCFrames(char, clone)
+	end
 
 	for _, part in pairs(clone:GetDescendants()) do
 		if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
