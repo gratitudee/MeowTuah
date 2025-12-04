@@ -156,7 +156,7 @@ function PlayerESP:DrawPlayer(Dictionary)
 
 	local BottomY = Bounds.Y + Bounds.H
 	if PlayerESP.Distance.Enabled then
-		Drawings.Distance:SetText(Distance)
+		Drawings.Distance:SetText(string.format("[%.1fm]", Distance))
 		Drawings.Distance.Text.Font = GetFont(PlayerESP.Font)
 		Drawings.Distance.Text.Size = PlayerESP.Size
 
@@ -174,8 +174,8 @@ function PlayerESP:DrawPlayer(Dictionary)
 	end
 
 	-- HEALTH TEXT
-	if PlayerESP["Health Text"].Enabled then
-		local Health, MaxHealth = Dictionary.Humanoid.Health, Dictionary.Humanoid.MaxHealth
+	if PlayerESP["Health Text"].Enabled and Dictionary.Humanoid then
+		local Health, MaxHealth = math.floor(Dictionary.Humanoid.Health), math.floor(Dictionary.Humanoid.MaxHealth)
 		local HealthText = `[{tostring(Health)}/{tostring(MaxHealth)}`
 		Drawings["Health Text"]:SetText(HealthText)
 		Drawings["Health Text"].Text.Font = GetFont(PlayerESP.Font)
@@ -235,6 +235,7 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}
 	PlayerDict.Humanoid = PlayerDict.Character and FindFirstChildWhichIsA(PlayerDict.Character, "Humanoid", false)
 	PlayerDict.Connections.CharacterAdded = Player.CharacterAdded:Connect(function(Character)
+		task.wait(1)
 		PlayerDict.Character = Character
 		PlayerDict.Humanoid = PlayerDict.Character and FindFirstChildWhichIsA(PlayerDict.Character, "Humanoid", false)
 		PlayerDict.Bodyparts = GetValidParts(Character)
