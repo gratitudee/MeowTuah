@@ -398,7 +398,7 @@ return function(self)
 
 	local FrameTimer = tick()
 	local FrameCounter = 0
-	local FPS = 60
+	local FPS = 67
 	local WatermarkHeartbeat = Heartbeat:Connect(function(a0: number)
 		if not Toggles.WatermarkToggle.Value then
 			return
