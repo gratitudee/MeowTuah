@@ -1,5 +1,4 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
-
 local Players = Services.Players
 local VirtualInputManager = Services.VirtualInputManager
 
@@ -14,23 +13,20 @@ local AutoParry = {
 	ParryKey = Enum.KeyCode.F,
 	Connections = {},
 	PlayerConnections = {},
-	State = {
-		Parrying = false,
-	},
+	State = { Parrying = false },
 }
 
 function AutoParry:SimulateParry()
-	if AutoParry.State.Parrying then
+	if self.State.Parrying then
 		return
 	end
 
-	AutoParry.State.Parrying = true
-	SendKeyEvent(VirtualInputManager, true, AutoParry.ParryKey, false, nil)
+	self.State.Parrying = true
+	SendKeyEvent(VirtualInputManager, true, self.ParryKey, false, nil)
 
-	local KeyPressDelay = math.random(0.045, 0.087)
-	task.delay(KeyPressDelay, function()
-		AutoParry.State.Parrying = false
-		SendKeyEvent(VirtualInputManager, false, AutoParry.ParryKey, false, nil)
+	task.delay(math.random(0.045, 0.087), function()
+		self.State.Parrying = false
+		SendKeyEvent(VirtualInputManager, false, self.ParryKey, false, nil)
 	end)
 end
 
@@ -42,82 +38,89 @@ function AutoParry:IsInRange(EnemyRootPart)
 		return false
 	end
 
-	local Distance = (EnemyRootPart.Position - LocalRootPart.Position).Magnitude
-	return Distance <= AutoParry.MaxDistance
+	return (EnemyRootPart.Position - LocalRootPart.Position).Magnitude <= self.MaxDistance
 end
 
 function AutoParry:OnMarkerReached(PlayerObj, Character)
-	if not AutoParry.Enabled or PlayerObj == Player then
+	if not self.Enabled or PlayerObj == Player then
 		return
 	end
 
 	local EnemyRootPart = FindFirstChild(Character, "HumanoidRootPart")
-	if not AutoParry:IsInRange(EnemyRootPart) then
-		return
-	end
-
-	if AutoParry:IsInRange(EnemyRootPart) then
-		AutoParry:SimulateParry()
+	if self:IsInRange(EnemyRootPart) then
+		self:SimulateParry()
 	end
 end
 
 function AutoParry:CleanupAnimationConnections(PlayerName, AnimationId)
-	local MarkerKey = PlayerName .. "_" .. AnimationId .. "_Pause"
-	local EndedKey = PlayerName .. "_" .. AnimationId .. "_Ended"
-
-	if AutoParry.PlayerConnections[MarkerKey] then
-		AutoParry.PlayerConnections[MarkerKey]:Disconnect()
-		AutoParry.PlayerConnections[MarkerKey] = nil
+	local PlayerConn = self.PlayerConnections[PlayerName]
+	if not PlayerConn or not PlayerConn[AnimationId] then
+		return
 	end
 
-	if AutoParry.PlayerConnections[EndedKey] then
-		AutoParry.PlayerConnections[EndedKey]:Disconnect()
-		AutoParry.PlayerConnections[EndedKey] = nil
+	for _, Connection in pairs(PlayerConn[AnimationId]) do
+		if typeof(Connection) == "RBXScriptConnection" then
+			Connection:Disconnect()
+		end
+	end
+	PlayerConn[AnimationId] = nil
+
+	if next(PlayerConn) == nil then
+		self.PlayerConnections[PlayerName] = nil
 	end
 end
 
 function AutoParry:SetupAnimationTracking(PlayerObj, Character)
 	local Humanoid = FindFirstChildOfClass(Character, "Humanoid")
 	local Animator = Humanoid and FindFirstChildOfClass(Humanoid, "Animator")
-
 	if not Animator then
 		return
 	end
 
-	local ConnectionKey = PlayerObj.Name .. "_AnimationPlayed"
-	if AutoParry.PlayerConnections[ConnectionKey] then
-		AutoParry.PlayerConnections[ConnectionKey]:Disconnect()
+	local PlayerName = PlayerObj.Name
+	if not self.PlayerConnections[PlayerName] then
+		self.PlayerConnections[PlayerName] = {}
 	end
 
-	AutoParry.PlayerConnections[ConnectionKey] = Utility.index(Animator, "AnimationPlayed"):Connect(function(Track)
-		local AnimationId = Track.Animation.AnimationId
-		local MarkerKey = PlayerObj.Name .. "_" .. AnimationId .. "_Pause"
+	if self.PlayerConnections[PlayerName].AnimationPlayed then
+		self.PlayerConnections[PlayerName].AnimationPlayed:Disconnect()
+	end
 
-		if AutoParry.PlayerConnections[MarkerKey] then
-			AutoParry.PlayerConnections[MarkerKey]:Disconnect()
-		end
+	self.PlayerConnections[PlayerName].AnimationPlayed = Utility.index(Animator, "AnimationPlayed")
+		:Connect(function(Track)
+			local AnimationId = Track.Animation.AnimationId
+			local AnimConn = self.PlayerConnections[PlayerName]
 
-		AutoParry.PlayerConnections[MarkerKey] = Utility.GetMarkerReachedSignal(Track, "Pause"):Connect(function()
-			AutoParry:OnMarkerReached(PlayerObj, Character)
+			if not AnimConn[AnimationId] then
+				AnimConn[AnimationId] = {}
+			end
+
+			if AnimConn[AnimationId].Pause then
+				AnimConn[AnimationId].Pause:Disconnect()
+			end
+			AnimConn[AnimationId].Pause = Utility.GetMarkerReachedSignal(Track, "Pause"):Connect(function()
+				self:OnMarkerReached(PlayerObj, Character)
+			end)
+
+			if AnimConn[AnimationId].Ended then
+				AnimConn[AnimationId].Ended:Disconnect()
+			end
+			AnimConn[AnimationId].Ended = Track.Ended:Connect(function()
+				self:CleanupAnimationConnections(PlayerName, AnimationId)
+			end)
 		end)
-
-		local EndedKey = PlayerObj.Name .. "_" .. AnimationId .. "_Ended"
-		if AutoParry.PlayerConnections[EndedKey] then
-			AutoParry.PlayerConnections[EndedKey]:Disconnect()
-		end
-
-		AutoParry.PlayerConnections[EndedKey] = Track.Ended:Connect(function()
-			AutoParry:CleanupAnimationConnections(PlayerObj.Name, AnimationId)
-		end)
-	end)
 end
 
 function AutoParry:MonitorPlayer(PlayerObj)
 	local function SetupCharacter(Character)
-		if not Character then
-			return
+		if Character then
+			self:SetupAnimationTracking(PlayerObj, Character)
 		end
-		AutoParry:SetupAnimationTracking(PlayerObj, Character)
+	end
+
+	local PlayerName = PlayerObj.Name
+	if not self.PlayerConnections[PlayerName] then
+		self.PlayerConnections[PlayerName] = {}
 	end
 
 	local Character = Utility.GetCharacter(PlayerObj)
@@ -125,26 +128,34 @@ function AutoParry:MonitorPlayer(PlayerObj)
 		SetupCharacter(Character)
 	end
 
-	local CharConnectionKey = PlayerObj.Name .. "_CharacterAdded"
-	if AutoParry.PlayerConnections[CharConnectionKey] then
-		AutoParry.PlayerConnections[CharConnectionKey]:Disconnect()
+	if self.PlayerConnections[PlayerName].CharacterAdded then
+		self.PlayerConnections[PlayerName].CharacterAdded:Disconnect()
 	end
 
-	AutoParry.PlayerConnections[CharConnectionKey] = Utility.index(PlayerObj, "CharacterAdded")
-		:Connect(function(NewCharacter)
-			SetupCharacter(NewCharacter)
-		end)
+	self.PlayerConnections[PlayerName].CharacterAdded = Utility.index(PlayerObj, "CharacterAdded")
+		:Connect(SetupCharacter)
 end
 
 function AutoParry:CleanupPlayer(PlayerObj)
-	for Key, Connection in pairs(AutoParry.PlayerConnections) do
-		if type(Key) == "string" and string.find(Key, PlayerObj.Name) then
-			if typeof(Connection) == "RBXScriptConnection" then
-				Connection:Disconnect()
+	local PlayerName = PlayerObj.Name
+	local PlayerConn = self.PlayerConnections[PlayerName]
+	if not PlayerConn then
+		return
+	end
+
+	for Key, Connection in pairs(PlayerConn) do
+		if typeof(Connection) == "RBXScriptConnection" then
+			Connection:Disconnect()
+		elseif type(Connection) == "table" then
+			for _, SubConnection in pairs(Connection) do
+				if typeof(SubConnection) == "RBXScriptConnection" then
+					SubConnection:Disconnect()
+				end
 			end
-			AutoParry.PlayerConnections[Key] = nil
 		end
 	end
+
+	self.PlayerConnections[PlayerName] = nil
 end
 
 function AutoParry:StartPlayerMonitoring()
@@ -152,42 +163,43 @@ function AutoParry:StartPlayerMonitoring()
 
 	for _, PlayerObj in ipairs(GetChildren(Players)) do
 		if PlayerObj:IsA("Player") and PlayerObj ~= Player then
-			AutoParry:MonitorPlayer(PlayerObj)
+			self:MonitorPlayer(PlayerObj)
 		end
 	end
 
-	local PlayerAdded = Utility.index(Players, "PlayerAdded"):Connect(function(PlayerObj)
-		AutoParry:MonitorPlayer(PlayerObj)
-	end)
+	table.insert(
+		self.Connections,
+		Utility.index(Players, "PlayerAdded"):Connect(function(PlayerObj)
+			self:MonitorPlayer(PlayerObj)
+		end)
+	)
 
-	local PlayerRemoving = Utility.index(Players, "PlayerRemoving"):Connect(function(PlayerObj)
-		AutoParry:CleanupPlayer(PlayerObj)
-	end)
-
-	table.insert(AutoParry.Connections, PlayerAdded)
-	table.insert(AutoParry.Connections, PlayerRemoving)
+	table.insert(
+		self.Connections,
+		Utility.index(Players, "PlayerRemoving"):Connect(function(PlayerObj)
+			self:CleanupPlayer(PlayerObj)
+		end)
+	)
 end
 
 function AutoParry:Start()
-	AutoParry:StartPlayerMonitoring()
+	self:StartPlayerMonitoring()
 end
 
 function AutoParry:Stop()
-	for _, Connection in pairs(AutoParry.Connections) do
+	for _, Connection in ipairs(self.Connections) do
 		if typeof(Connection) == "RBXScriptConnection" then
 			Connection:Disconnect()
 		end
 	end
-	table.clear(AutoParry.Connections)
+	table.clear(self.Connections)
 
-	for Key, Connection in pairs(AutoParry.PlayerConnections) do
-		if typeof(Connection) == "RBXScriptConnection" then
-			Connection:Disconnect()
-		end
+	for PlayerName, PlayerConn in pairs(self.PlayerConnections) do
+		self:CleanupPlayer(Players:FindFirstChild(PlayerName))
 	end
-	table.clear(AutoParry.PlayerConnections)
+	table.clear(self.PlayerConnections)
 
-	AutoParry.State.Parrying = false
+	self.State.Parrying = false
 end
 
 return AutoParry
