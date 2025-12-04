@@ -336,6 +336,7 @@ function PlayerESP:DrawViewportXRay()
 
 			local _, onScreen = WorldToScreen(pos)
 			if not onScreen then
+				print(`{character.nAME} is not onscreen.`)
 				return false
 			end
 
@@ -350,6 +351,7 @@ function PlayerESP:DrawViewportXRay()
 			params.FilterType = Enum.RaycastFilterType.Exclude
 
 			local result = Workspace:Raycast(camPos, direction, params)
+			print(result.Instance:IsDescendantOf(character))
 			return not result or result.Instance:IsDescendantOf(character)
 		end,
 
