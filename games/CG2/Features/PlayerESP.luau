@@ -333,7 +333,7 @@ function PlayerESP:Start()
 
 		local Processed = 0
 		while Processed < Info.PerFrame and Info.Index <= #Info.List do
-			PlayerESP:DrawPlayer(Info.List[Info.Index])
+			MeowTuah:SafeCall(PlayerESP:DrawPlayer(Info.List[Info.Index]))
 			Info.Index += 1
 			Processed += 1
 		end

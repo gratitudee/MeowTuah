@@ -333,12 +333,12 @@ function Trinket:Start()
 	end
 	Trinket.Started = true
 
-	Trinket:CacheTrinkets()
-	Trinket:InitESP()
-	Trinket:HandleAutograb()
+	MeowTuah:SafeCall(Trinket:CacheTrinkets())
+	MeowTuah:SafeCall(Trinket:InitESP())
+	MeowTuah:SafeCall(Trinket:HandleAutograb())
 
 	local UpdateConnection = Heartbeat:Connect(function()
-		Trinket:UpdateESP()
+		MeowTuah:SafeCall(Trinket:UpdateESP())
 	end)
 	table.insert(Trinket.Connections, UpdateConnection)
 end
