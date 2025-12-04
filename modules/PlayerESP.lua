@@ -306,6 +306,7 @@ function PlayerESP:DrawViewportXRay()
 
 			if Character ~= self.LastCharacter then
 				self:__RefreshViewportModel(Character)
+				print("Refreshed")
 				self.LastCharacter = Character
 			end
 
