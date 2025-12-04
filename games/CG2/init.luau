@@ -1,3 +1,4 @@
+local Visuals = require("./Universal/Features/Visuals")
 local Base = "games/CG2/Features"
 local AutoParry, Movement, PlayerESP, Trinket =
 	LoadModule(`{Base}/AutoParry.luau`),
@@ -94,6 +95,24 @@ return function(self)
 	}):AddColorPicker("PlayerHealthTextColor", {
 		Default = Color3.new(1, 1, 1),
 		Title = "Health Text Color",
+		Transparency = 0,
+	})
+
+	VisualsLeftGroup:AddToggle("PlayerChamsEnabled", {
+		Text = "Chams",
+		Default = false,
+		Tooltip = "Enables Chams ESP",
+	})
+
+	Visuals:AddLabel("Chams Fill Colour"):AddColorPicker("PlayerChamsFillColor", {
+		Default = Color3.new(1, 1, 1),
+		Title = "Chams Fill Color",
+		Transparency = 0.75,
+	})
+
+	Visuals:AddLabel("Chams Outline Colour"):AddColorPicker("PlayerChamsOutlineColor", {
+		Default = Color3.new(0, 0, 0),
+		Title = "Chams Outline Color",
 		Transparency = 0,
 	})
 
@@ -247,6 +266,20 @@ return function(self)
 	Options.PlayerHealthTextColor:OnChanged(function()
 		PlayerESP["Health Text"].Color = Options.PlayerHealthTextColor.Value
 		PlayerESP["Health Text"].Transparency = Options.PlayerHealthTextColor.Transparency
+	end)
+
+	Toggles.PlayerChamsEnabled:OnChanged(function()
+		PlayerESP.Chams.Enabled = Toggles.PlayerChamsEnabled.Value
+	end)
+
+	Options.PlayerChamsFillColor:OnChanged(function()
+		PlayerESP.Chams.Fill.Color = Options.PlayerChamsFillColor.Value
+		PlayerESP.Chams.Fill.Transparency = Options.PlayerChamsFillColor.Transparency
+	end)
+
+	Options.PlayerChamsOutlineColor:OnChanged(function()
+		PlayerESP.Chams.Outline.Color = Options.PlayerChamsOutlineColor.Value
+		PlayerESP.Chams.Outline.Transparency = Options.PlayerChamsOutlineColor.Transparency
 	end)
 
 	-- Trinket Callbacks

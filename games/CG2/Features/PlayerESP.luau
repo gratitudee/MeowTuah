@@ -51,6 +51,19 @@ local PlayerESP = {
 		Color = Color3.new(1, 1, 1),
 		Transparency = 0,
 	},
+
+	Chams = {
+		Enabled = false,
+		Fill = {
+			Color = Color3.new(1, 1, 1),
+			Transparency = 0.75,
+		},
+
+		Outline = {
+			Color = Color3.new(0, 0, 0),
+			Transparency = 0,
+		},
+	},
 }
 
 local DrawingFonts = {
@@ -190,6 +203,17 @@ function PlayerESP:DrawPlayer(Dictionary)
 	else
 		Drawings["Health Text"]:SetVisible(false)
 	end
+
+	if PlayerESP.Chams.Enabled and Dictionary.Character then
+		local ChamsFlags = PlayerESP.Chams
+		Drawings.Chams:SetFillProperties(ChamsFlags.Fill.Color, ChamsFlags.Fill.Transparency)
+		Drawings.Chams:SetOutlineProperties(ChamsFlags.Outline.Color, ChamsFlags.Outline.Transparency)
+		Drawings.Chams:SetCharacter(Dictionary.Character)
+		Drawings.Chams:SetVisible(true)
+	else
+		Drawings.Chams:SetVisible(false)
+		Drawings.Chams:SetCharacter(nil)
+	end
 end
 
 function PlayerESP:ValidatePart(Part)
@@ -229,6 +253,7 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings.Name = ESP:DrawText()
 	PlayerDict.Drawings.Distance = ESP:DrawText()
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
+	PlayerDict.Drawings.Chams = ESP:DrawHighlight()
 
 	PlayerDict.Character = Player.Character
 	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}

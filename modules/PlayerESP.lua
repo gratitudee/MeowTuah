@@ -1,5 +1,6 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local Workspace = Services.Workspace
+local CoreGui = gethui and gethui() or Services.CoreGui
 
 -- Variables
 local Camera = Utility.index(Workspace, "CurrentCamera")
@@ -147,6 +148,38 @@ function PlayerESP:DrawText()
 
 		Remove = function(self)
 			self.Text:Remove()
+		end,
+	}
+end
+
+function PlayerESP:DrawHighlight()
+	local Highlight = Instance.new("Highlight")
+	Highlight.Enabled = false
+	Highlight.Parent = CoreGui
+
+	return {
+		Highlight = Highlight,
+
+		SetVisible = function(self, state)
+			self.Highlight.Enabled = state
+		end,
+
+		SetFillProperties = function(self, Color, Transparency)
+			self.Highlight.FillColor = Color
+			self.Highlight.FillTransparency = Transparency
+		end,
+
+		SetOutlineProperties = function(self, Color, Transparency)
+			self.Highlight.OutlineColor = Color
+			self.Highlight.OutlineTransparency = Transparency
+		end,
+
+		SetCharacter = function(self, Character)
+			self.Highlight.Adornee = Character
+		end,
+
+		Remove = function(self)
+			self.Highlight:Destroy()
 		end,
 	}
 end
