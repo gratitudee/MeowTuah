@@ -5,6 +5,7 @@ local ESP = LoadModule("modules/PlayerESP.lua")
 local Players = Services.Players
 local Workspace = Services.Workspace
 local RunService = Services.RunService
+local CoreGui = gethui and gethui() or Services.CoreGui
 
 local LocalPlayer = Utility.GetPlayer()
 local Camera = Utility.index(Workspace, "CurrentCamera")
@@ -58,6 +59,15 @@ local DefaultConfig = {
 	},
 	ViewportXRay = {
 		Enabled = false,
+		Objects = {
+			ScreenUI = nil,
+			ViewportFrame = nil,
+			Camera = nil,
+			Connections = {},
+			RayIgnore = {},
+			Clones = {},
+			LastUpdate = 0,
+		},
 	},
 }
 
@@ -66,6 +76,9 @@ PlayerESP.ScriptConnections = {}
 PlayerESP.Data = {}
 
 --// Constants
+local MAX_VISIBILITY_DISTANCE = 100
+local MIN_BOUNDING_SIZE = 3
+
 --// Utility Functions
 local function GetFont(Name)
 	return DrawingFonts[Name] or DrawingFonts.UI
@@ -107,6 +120,298 @@ local function HideAllDrawings(Drawings)
 	end
 end
 
+local function SafeDestroy(instance)
+	if instance and typeof(instance) == "Instance" then
+		pcall(function()
+			if instance.Parent then
+				instance:Destroy()
+			end
+		end)
+	end
+end
+
+function PlayerESP.ViewportXRay:Init()
+	local objs = self.Objects
+
+	if objs.ScreenUI and objs.ScreenUI.Parent then
+		return
+	end
+
+	objs.ScreenUI = Instance.new("ScreenGui")
+	objs.ScreenUI.Name = "ViewportESP"
+	objs.ScreenUI.ResetOnSpawn = false
+	objs.ScreenUI.IgnoreGuiInset = true
+	objs.ScreenUI.DisplayOrder = 999999
+	objs.ScreenUI.Parent = CoreGui
+
+	objs.ViewportFrame = Instance.new("ViewportFrame")
+	objs.ViewportFrame.Name = "ESPViewport"
+	objs.ViewportFrame.Size = UDim2.fromScale(1, 1)
+	objs.ViewportFrame.BackgroundTransparency = 1
+	objs.ViewportFrame.LightDirection = Vector3.new(-1, -1, -1)
+	objs.ViewportFrame.Ambient = Color3.fromRGB(120, 120, 120)
+	objs.ViewportFrame.Parent = objs.ScreenUI
+
+	objs.Camera = Instance.new("Camera")
+	objs.Camera.FieldOfView = 70
+	objs.ViewportFrame.CurrentCamera = objs.Camera
+
+	objs.Clones = {}
+	objs.Connections = {}
+	objs.RayIgnore = { LocalPlayer.Character or Instance.new("Model") }
+	objs.LastUpdate = 0
+
+	local charAddedConn = Utility.index(LocalPlayer, "CharacterAdded"):Connect(function(char)
+		objs.RayIgnore[1] = char
+	end)
+	table.insert(objs.Connections, charAddedConn)
+end
+
+function PlayerESP.ViewportXRay:CreateClone(character)
+	if not character or not character.PrimaryPart then
+		return nil
+	end
+
+	character.Archivable = true
+	local clone = character:Clone()
+	character.Archivable = false
+
+	for _, obj in pairs(clone:GetDescendants()) do
+		if obj:IsA("BasePart") then
+			obj.Anchored = true
+			obj.CanCollide = false
+			obj.CanTouch = false
+			obj.CanQuery = false
+			obj.Massless = true
+			obj.CastShadow = false
+
+			if not obj:GetAttribute("OrigTrans") then
+				obj:SetAttribute("OrigTrans", obj.Transparency)
+			end
+		elseif obj:IsA("Decal") or obj:IsA("Texture") or obj:IsA("SurfaceAppearance") then
+			if not obj:GetAttribute("OrigTrans") then
+				obj:SetAttribute("OrigTrans", obj.Transparency)
+			end
+		elseif obj:IsA("Script") or obj:IsA("LocalScript") or obj:IsA("ModuleScript") then
+			obj:Destroy()
+		elseif obj:IsA("Humanoid") then
+			obj.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+			obj.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+		end
+	end
+
+	clone.Parent = self.Objects.ViewportFrame
+	return clone
+end
+
+function PlayerESP.ViewportXRay:IsVisible(character)
+	if not character then
+		return false
+	end
+
+	local hrp = Utility.FindFirstChild(character, "HumanoidRootPart")
+	if not hrp then
+		return false
+	end
+
+	local cam = Utility.index(Workspace, "CurrentCamera")
+	if not cam then
+		return false
+	end
+
+	local pos = hrp.Position
+	local camPos = cam.CFrame.Position
+
+	local _, onScreen = WorldToScreen(pos)
+	if not onScreen then
+		return false
+	end
+
+	local distance = (pos - camPos).Magnitude
+	if distance > MAX_VISIBILITY_DISTANCE then
+		return false
+	end
+
+	local _, size = character:GetBoundingBox()
+	if size.Magnitude < MIN_BOUNDING_SIZE then
+		return false
+	end
+
+	local direction = (pos - camPos)
+	local params = RaycastParams.new()
+	params.FilterDescendantsInstances = self.Objects.RayIgnore
+	params.FilterType = Enum.RaycastFilterType.Exclude
+
+	local result = Workspace:Raycast(camPos, direction, params)
+	return not result or result.Instance:IsDescendantOf(character)
+end
+
+function PlayerESP.ViewportXRay:RefreshCharacterClone(player)
+	if not player then
+		return
+	end
+
+	local objs = self.Objects
+	self:ClearPlayer(player)
+
+	local char = player.Character
+	if not char or not char.PrimaryPart then
+		return
+	end
+
+	local clone = self:CreateClone(char)
+	if clone then
+		objs.Clones[player] = clone
+	end
+end
+
+function PlayerESP.ViewportXRay:ClearPlayer(player)
+	local objs = self.Objects
+	if not objs or not objs.Clones then
+		return
+	end
+
+	local clone = objs.Clones[player]
+	if clone then
+		SafeDestroy(clone)
+		objs.Clones[player] = nil
+	end
+end
+
+function PlayerESP.ViewportXRay:ClearAll()
+	local objs = self.Objects
+	if not objs or not objs.Clones then
+		return
+	end
+
+	for player, clone in pairs(objs.Clones) do
+		SafeDestroy(clone)
+		objs.Clones[player] = nil
+	end
+end
+
+function PlayerESP.ViewportXRay:UpdateCloneCFrames(character, clone)
+	if not character or not clone then
+		return
+	end
+
+	for _, part in pairs(character:GetDescendants()) do
+		if part:IsA("BasePart") then
+			local clonePart = clone:FindFirstChild(part.Name, true)
+			if clonePart and clonePart:IsA("BasePart") then
+				clonePart.CFrame = part.CFrame
+			end
+		end
+	end
+
+	for _, obj in pairs(character:GetChildren()) do
+		if obj:IsA("Accessory") or obj:IsA("Tool") then
+			local cloneObj = clone:FindFirstChild(obj.Name)
+			if cloneObj then
+				for _, part in pairs(obj:GetDescendants()) do
+					if part:IsA("BasePart") then
+						local clonePart = cloneObj:FindFirstChild(part.Name, true)
+						if clonePart and clonePart:IsA("BasePart") then
+							clonePart.CFrame = part.CFrame
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function PlayerESP.ViewportXRay:UpdatePlayer(playerDict)
+	if not PlayerESP.Enabled or not self.Enabled then
+		return
+	end
+
+	local player = playerDict.Player
+	if not player or player == LocalPlayer then
+		return
+	end
+
+	local objs = self.Objects
+
+	if not objs.ViewportFrame or not objs.ViewportFrame.Parent then
+		self:Init()
+		objs = self.Objects
+	end
+
+	local cam = Utility.index(Workspace, "CurrentCamera")
+	if not cam then
+		return
+	end
+
+	if objs.Camera then
+		objs.Camera.CFrame = cam.CFrame
+	end
+
+	local char = playerDict.Character
+	local clone = objs.Clones[player]
+
+	if not char then
+		if clone then
+			self:ClearPlayer(player)
+		end
+		return
+	end
+
+	if not clone or not clone.Parent then
+		self:RefreshCharacterClone(player)
+		clone = objs.Clones[player]
+		if not clone then
+			return
+		end
+	end
+
+	local visible = self:IsVisible(char)
+
+	if not visible then
+		self:UpdateCloneCFrames(char, clone)
+	end
+
+	for _, part in pairs(clone:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
+			local origTrans = part:GetAttribute("OrigTrans") or 0
+			part.Transparency = (not visible) and origTrans or 1
+		end
+	end
+end
+
+function PlayerESP.ViewportXRay:Cleanup()
+	local objs = self.Objects
+
+	if objs.Connections then
+		for _, conn in pairs(objs.Connections) do
+			if conn and typeof(conn) == "RBXScriptConnection" then
+				pcall(function()
+					conn:Disconnect()
+				end)
+			end
+		end
+		objs.Connections = {}
+	end
+
+	self:ClearAll()
+
+	if objs.ViewportFrame then
+		SafeDestroy(objs.ViewportFrame)
+		objs.ViewportFrame = nil
+	end
+
+	if objs.ScreenUI then
+		SafeDestroy(objs.ScreenUI)
+		objs.ScreenUI = nil
+	end
+
+	objs.Camera = nil
+
+	objs.Clones = {}
+	objs.RayIgnore = {}
+	objs.LastUpdate = 0
+end
+
 function PlayerESP:ValidatePart(Part)
 	if not Part or typeof(Part) ~= "Instance" then
 		return false
@@ -128,6 +433,10 @@ function PlayerESP:DrawPlayer(Dictionary)
 	local Character = Dictionary.Character
 	local Drawings = Dictionary.Drawings
 	local Bodyparts = Dictionary.Bodyparts
+
+	if self.ViewportXRay and self.ViewportXRay.Enabled then
+		self.ViewportXRay:UpdatePlayer(Dictionary)
+	end
 
 	if not Character then
 		HideAllDrawings(Drawings)
@@ -229,13 +538,6 @@ function PlayerESP:DrawPlayer(Dictionary)
 		Drawings.Chams:SetVisible(false)
 		Drawings.Chams:SetCharacter(nil)
 	end
-
-	if self.ViewportXRay.Enabled and Dictionary.Character then
-		Drawings.ViewportXRay:Update(Dictionary)
-		Drawings.ViewportXRay:SetVisible(true)
-	else
-		Drawings.ViewportXRay:SetVisible(false)
-	end
 end
 
 function PlayerESP:InitPlayer(Player)
@@ -256,7 +558,6 @@ function PlayerESP:InitPlayer(Player)
 	PlayerDict.Drawings.Distance = ESP:DrawText()
 	PlayerDict.Drawings["Health Text"] = ESP:DrawText()
 	PlayerDict.Drawings.Chams = ESP:DrawHighlight()
-	PlayerDict.Drawings.ViewportXRay = ESP:DrawViewportXRay()
 
 	PlayerDict.Character = Player.Character
 	PlayerDict.Bodyparts = PlayerDict.Character and GetValidParts(PlayerDict.Character) or {}
@@ -270,10 +571,18 @@ function PlayerESP:InitPlayer(Player)
 		PlayerDict.Humanoid = Utility.FindFirstChildWhichIsA(Character, "Humanoid", false)
 		PlayerDict.Bodyparts = GetValidParts(Character)
 
+		if self.ViewportXRay and self.ViewportXRay.Enabled then
+			self.ViewportXRay:RefreshCharacterClone(Player)
+		end
+
 		PlayerDict.Connections.ChildAdded = Character.ChildAdded:Connect(function(Child)
 			if self:ValidatePart(Child) then
 				table.insert(PlayerDict.Bodyparts, Child)
 			end
+
+			task.defer(function()
+				self.ViewportXRay:RefreshCharacterClone(Player)
+			end)
 		end)
 
 		PlayerDict.Connections.ChildRemoving = Character.ChildRemoved:Connect(function(Child)
@@ -283,12 +592,20 @@ function PlayerESP:InitPlayer(Player)
 					break
 				end
 			end
+
+			task.defer(function()
+				self.ViewportXRay:RefreshCharacterClone(Player)
+			end)
 		end)
 	end)
 
 	PlayerDict.Connections.CharacterRemoved = Player.CharacterRemoving:Connect(function()
 		PlayerDict.Character = nil
 		PlayerDict.Bodyparts = {}
+
+		if self.ViewportXRay then
+			self.ViewportXRay:ClearPlayer(Player)
+		end
 
 		if PlayerDict.Connections.ChildAdded then
 			PlayerDict.Connections.ChildAdded:Disconnect()
@@ -308,20 +625,6 @@ function PlayerESP:Start()
 			self:InitPlayer(Player)
 		end
 	end
-
-	for _, Data in pairs(self.Data) do
-		if Data.Drawings and Data.Drawings.ViewportXRay then
-			Data.Drawings.ViewportXRay:SetRayIgnore(Utility.index(LocalPlayer, "Character"))
-		end
-	end
-
-	local LocalCharacterAdded = Utility.index(LocalPlayer, "CharacterAdded"):Connect(function(Character)
-		for _, Data in pairs(self.Data) do
-			if Data.Drawings and Data.Drawings.ViewportXRay then
-				Data.Drawings.ViewportXRay:SetRayIgnore(Character)
-			end
-		end
-	end)
 
 	local PlayerAdded = Utility.index(Players, "PlayerAdded"):Connect(function(Player)
 		if Player ~= LocalPlayer then
@@ -349,6 +652,10 @@ function PlayerESP:Start()
 			end)
 		end
 
+		if self.ViewportXRay then
+			self.ViewportXRay:ClearPlayer(Player)
+		end
+
 		self.Data[Player.Name] = nil
 	end)
 
@@ -370,11 +677,23 @@ function PlayerESP:Start()
 		RenderInfo.LastUpdate = Now
 
 		if not self.Enabled then
+			if self.ViewportXRay then
+				self.ViewportXRay:ClearAll()
+				self.ViewportXRay:Cleanup()
+			end
+
 			for _, Dict in pairs(self.Data) do
 				HideAllDrawings(Dict.Drawings)
 			end
 
 			return
+		end
+
+		if self.ViewportXRay and self.ViewportXRay.Enabled and not self.ViewportXRay.Objects.ViewportFrame then
+			self.ViewportXRay:Init()
+		elseif self.ViewportXRay and not self.ViewportXRay.Enabled then
+			self.ViewportXRay:ClearAll()
+			self.ViewportXRay:Cleanup()
 		end
 
 		if #RenderInfo.List == 0 or RenderInfo.Index > #RenderInfo.List then
@@ -403,10 +722,13 @@ function PlayerESP:Start()
 	table.insert(self.ScriptConnections, PlayerAdded)
 	table.insert(self.ScriptConnections, PlayerRemoving)
 	table.insert(self.ScriptConnections, RenderConnection)
-	table.insert(self.ScriptConnections, LocalCharacterAdded)
 end
 
 function PlayerESP:Stop()
+	if self.ViewportXRay then
+		self.ViewportXRay:Cleanup()
+	end
+
 	for PlayerName, PlayerDict in pairs(self.Data) do
 		for _, Connection in pairs(PlayerDict.Connections) do
 			if Connection and typeof(Connection) == "RBXScriptConnection" then

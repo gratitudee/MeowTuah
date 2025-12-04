@@ -239,6 +239,7 @@ function PlayerESP:GetBoundingBox(Parts)
 	}
 end
 
+--[[
 function PlayerESP:DrawViewportXRay()
 	local ScreenUI = FindFirstChild(CoreGui, "VPXray")
 	if not ScreenUI then
@@ -447,5 +448,6 @@ function PlayerESP:DrawViewportXRay()
 		end,
 	}
 end
-
+]]
+--
 return PlayerESP
