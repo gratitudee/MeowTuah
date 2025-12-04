@@ -76,8 +76,8 @@ PlayerESP.ScriptConnections = {}
 PlayerESP.Data = {}
 
 --// Constants
-local VIEWPORT_UPDATE_RATE = 1 / 30
-local MAX_VISIBILITY_DISTANCE = 1000
+local VIEWPORT_UPDATE_RATE = 1 / 60
+local MAX_VISIBILITY_DISTANCE = 100
 local MIN_BOUNDING_SIZE = 3
 
 --// Utility Functions
@@ -225,7 +225,7 @@ function PlayerESP.ViewportXRay:IsVisible(character)
 	local pos = hrp.Position
 	local camPos = cam.CFrame.Position
 
-	local _, onScreen = cam:WorldToViewportPoint(pos)
+	local _, onScreen = WorldToScreen(pos)
 	if not onScreen then
 		return false
 	end
