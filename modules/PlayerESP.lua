@@ -266,8 +266,8 @@ function PlayerESP:DrawViewportXRay()
 		ViewportCamera = Instance.new("Camera")
 		ViewportCamera.Name = "VPCamera"
 		ViewportCamera.FieldOfView = Camera.FieldOfView
+		ViewportCamera.Parent = ViewportFrame
 		ViewportFrame.CurrentCamera = ViewportCamera
-		ViewportCamera.Parent = ViewportCamera
 	end
 
 	return {
