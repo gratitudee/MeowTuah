@@ -377,15 +377,15 @@ function PlayerESP.ViewportXRay:Update()
 
 		local visible = self:IsVisible(char)
 
+		if not visible and shouldUpdateCFrames then
+			self:UpdateCloneCFrames(char, clone)
+		end
+
 		for _, part in pairs(clone:GetDescendants()) do
 			if part:IsA("BasePart") or part:IsA("Decal") or part:IsA("Texture") then
 				local origTrans = part:GetAttribute("OrigTrans") or 0
 				part.Transparency = (not visible) and origTrans or 1
 			end
-		end
-
-		if not visible and shouldUpdateCFrames then
-			self:UpdateCloneCFrames(char, clone)
 		end
 	end
 
