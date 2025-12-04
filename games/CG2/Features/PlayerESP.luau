@@ -147,7 +147,7 @@ function PlayerESP:DrawPlayer(Dictionary)
 
 		local TextBounds = Drawings.Name.Text.TextBounds
 		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
-		local Y = Bounds.Y - TextBounds.Y - 2
+		local Y = Bounds.Y - TextBounds.Y
 		Drawings.Name:SetPosition(X, Y)
 		Drawings.Name:SetColor(PlayerESP.Name.Color, PlayerESP.Name.Transparency)
 	else
@@ -162,7 +162,7 @@ function PlayerESP:DrawPlayer(Dictionary)
 
 		local TextBounds = Drawings.Distance.Text.TextBounds
 		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
-		local Y = BottomY + 2
+		local Y = BottomY
 
 		Drawings.Distance:SetPosition(X, Y)
 		Drawings.Distance:SetColor(PlayerESP.Distance.Color, PlayerESP.Distance.Transparency)
@@ -173,7 +173,6 @@ function PlayerESP:DrawPlayer(Dictionary)
 		Drawings.Distance:SetVisible(false)
 	end
 
-	-- HEALTH TEXT
 	if PlayerESP["Health Text"].Enabled and Dictionary.Humanoid then
 		local Health, MaxHealth = math.floor(Dictionary.Humanoid.Health), math.floor(Dictionary.Humanoid.MaxHealth)
 		local HealthText = `[{tostring(Health)}/{tostring(MaxHealth)}]`
@@ -183,7 +182,7 @@ function PlayerESP:DrawPlayer(Dictionary)
 
 		local TextBounds = Drawings["Health Text"].Text.TextBounds
 		local X = Bounds.X + (Bounds.W / 2) - (TextBounds.X / 2)
-		local Y = BottomY + 2
+		local Y = BottomY
 
 		Drawings["Health Text"]:SetPosition(X, Y)
 		Drawings["Health Text"]:SetColor(PlayerESP["Health Text"].Color, PlayerESP["Health Text"].Transparency)
