@@ -113,7 +113,7 @@ function Automation.AutoAscend:Start()
 				local Args = { ... }
 				if Args and Args.CanAscend == true then
 					if Ascend:InvokeServer() then
-						MeowTuah.Library:Notify("[AUTO ASCEND] - SUCCESSFULLY ASCEND!")
+						MeowTuah.Library:Notify("[AUTO ASCEND] - SUCCESSFULLY ASCENDED!")
 					end
 				end
 			end
