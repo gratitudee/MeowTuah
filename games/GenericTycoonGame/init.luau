@@ -76,10 +76,9 @@ return function(self)
 		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
 
-	Options.PurchasingOptions:OnChanged(function()
-		for key, value in pairs(Options.PurchasingOptions.Value) do
-			print(key, value)
-			Automation.Flags.AutoBuyButtonPreferences[key] = value
+	luaOptions.PurchasingOptions:OnChanged(function()
+		for flag, _ in pairs(Automation.Flags.AutoBuyButtonPreferences) do
+			Automation.Flags.AutoBuyButtonPreferences[flag] = Options.PurchasingOptions.Value[flag] == true
 		end
 	end)
 
