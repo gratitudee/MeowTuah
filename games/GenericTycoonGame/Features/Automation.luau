@@ -89,7 +89,8 @@ function Automation.AutoRebirth:Start()
 		old = hookfunction(Connection.Function, function(...)
 			if Automation.Flags.AutoRebirth then
 				local Args = { ... }
-				if Args and Args.CanRebirth == true and Args.IsAtMaxRebirth ~= true then
+				local Data = Args[1]
+				if Args and Data.CanRebirth and not Data.IsAtMaxRebirth then
 					if Rebirth:InvokeServer() then
 						MeowTuah.Library:Notify("[AUTO REBIRTH] - SUCCESSFULLY REBIRTHED!")
 					end
@@ -111,7 +112,8 @@ function Automation.AutoAscend:Start()
 		old = hookfunction(Connection.Function, function(...)
 			if Automation.Flags.AutoRebirth then
 				local Args = { ... }
-				if Args and Args.CanAscend == true then
+				local Data = Args[1]
+				if Data and Data.CanAscend then
 					if Ascend:InvokeServer() then
 						MeowTuah.Library:Notify("[AUTO ASCEND] - SUCCESSFULLY ASCENDED!")
 					end
