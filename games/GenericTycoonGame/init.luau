@@ -80,6 +80,21 @@ return function(self)
 		Tooltip = "Teleports your ores to the collector.",
 	})
 
+	ExploitsRight:AddToggle("InstantOresUpgraders", {
+		Text = "[INSTANT ORES] TP Ores To Collectors",
+		Default = false,
+		Tooltip = "This requires Instant Ores to be enabled.",
+	})
+
+	ExploitsRight:AddDropdown("InstantOresUpgraderMode", {
+		Values = { "Pivot", "Touch" },
+		Default = 1,
+		Multi = false,
+
+		Text = "Instant Ore Upgrader Mode",
+		Tooltip = "Select how the script triggers the upgrader.",
+	})
+
 	ExploitsRight:AddToggle("GrowableAura", {
 		Text = "[?] Growable Aura",
 		Default = false,
@@ -118,6 +133,14 @@ return function(self)
 
 	Toggles.InstantOres:OnChanged(function()
 		Exploits.Flags.InstantOres = Toggles.InstantOres.Value
+	end)
+
+	Toggles.InstantOresUpgraders:OnChanged(function()
+		Exploits.Flags.InstantOreSettings.TeleportToUpgraders = Toggles.InstantOresUpgraders.Value
+	end)
+
+	Options.InstantOresUpgraderMode:OnChanged(function()
+		Exploits.Flags.InstantOreSettings.Mode = Options.InstantOresUpgraderMode.Value or "Touch"
 	end)
 
 	Toggles.GrowableAura:OnChanged(function()
