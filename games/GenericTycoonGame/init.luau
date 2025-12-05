@@ -42,15 +42,15 @@ return function(self)
 		Tooltip = "Automatically chooses the best tycoon manager option.",
 	})
 
-	Toggles.AutoBuyButtons.OnChanged:Connect(function()
+	Toggles.AutoBuyButtons:OnChanged(function()
 		Automation.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
 
-	Toggles.AutoRebirth.OnChanged:Connect(function()
+	Toggles.AutoRebirth:OnChanged(function()
 		Automation.AutoRebirth = Toggles.AutoRebirth.Value
 	end)
 
-	Toggles.AutoTycoonManager.OnChanged:Connect(function()
+	Toggles.AutoTycoonManager:OnChanged(function()
 		Automation.AutoTycoonManager = Toggles.AutoTycoonManager.Value
 	end)
 
