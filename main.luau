@@ -45,6 +45,7 @@ return function(Options)
 			},
 			{
 				Name = "Generic Tycoon Game",
+				UniverseId = 4192576542,
 				Load = LoadModule("games/GenericTycoonGame/init.luau"),
 			},
 		}
