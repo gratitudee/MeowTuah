@@ -40,9 +40,8 @@ function Automation.AutoBuyButtons:Start()
 		end
 
 		for _, Button in pairs(Event:InvokeServer()) do
-			local TouchInterest = FindFirstChildWhichIsA(Button, "TouchInterest", true)
+			local TouchInterest = FindFirstChildWhichIsA(Button.Parent, "TouchInterest", true)
 			if TouchInterest and self.Bodypart then
-				print("fired touch")
 				firetouchinterest(self.Bodypart, TouchInterest, true)
 				firetouchinterest(self.Bodypart, TouchInterest, false)
 			else
