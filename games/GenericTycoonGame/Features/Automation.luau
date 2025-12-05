@@ -199,7 +199,6 @@ end
 function Automation.AutoBuyButtons:GetButtons()
 	local Event = ReplicatedStorage.FetchFunctions.FetchButtonModels
 	local Buttons, ValidButtons = Event:InvokeServer(), {}
-	local Pref = Automation.Flags.AutoBuyButtonPreferences
 	local TokenColor = self.ButtonColours.Token
 
 	for _, Button in pairs(Buttons) do
@@ -225,11 +224,11 @@ function Automation.AutoBuyButtons:GetButtons()
 
 		local isFree = Price.Text:lower():find("free") ~= nil
 
-		if Pref["Ignore Tokens"] and not isFree then
+		if Automation.Flags.AutoBuyButtonPreferences["Ignore Tokens"] and not isFree then
 			local isTokenColor = InnerButton.Color == TokenColor
 			local isTokenText = Price.Text:find("Token")
 			if isTokenColor or isTokenText then
-				print("SKIPPING TOKEN BUTTON:", Price.Text, Pref["Ignore Tokens"])
+				print("SKIPPING TOKEN BUTTON:", Price.Text, Automation.Flags.AutoBuyButtonPreferences["Ignore Tokens"])
 				continue
 			end
 		end
@@ -258,7 +257,6 @@ function Automation.AutoBuyButtons:GetButtons()
 end
 
 function Automation.AutoBuyButtons:ChooseButton(ButtonList)
-	local Pref = Automation.Flags.AutoBuyButtonPreferences
 	local ColorBlue = self.ButtonColours.Blue
 
 	local nonBlue, blue = {}, {}
@@ -288,7 +286,7 @@ function Automation.AutoBuyButtons:ChooseButton(ButtonList)
 		return list[1]
 	end
 
-	if Pref["Low Priority Blue Buttons"] then
+	if Automation.Flags.AutoBuyButtonPreferences["Low Priority Blue Buttons"] then
 		if #nonBlue > 0 then
 			return cheapest(nonBlue)
 		end
