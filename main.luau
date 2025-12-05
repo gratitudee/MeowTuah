@@ -43,6 +43,10 @@ return function(Options)
 				Name = "Cult Game 2",
 				Load = LoadModule("games/CG2/init.luau"),
 			},
+			{
+				Name = "Generic Tycoon Game",
+				Load = LoadModule("games/GenericTycoonGame/init.luau"),
+			},
 		}
 
 		getgenv().MeowTuah = {

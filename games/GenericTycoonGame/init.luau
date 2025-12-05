@@ -1,4 +1,4 @@
-local Base = "Games/Generic Tycoon Game/Features"
+local Base = "Games/GenericTycoonGame/Features"
 local Automation = LoadModule(`{Base}/Automation.luau`)
 
 return function(self)
