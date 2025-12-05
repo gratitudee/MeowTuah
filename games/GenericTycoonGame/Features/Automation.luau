@@ -128,21 +128,10 @@ function Automation.AutoTycoonManager:Start()
 
 			return old(...)
 		end)
-
-		self.Restore = function()
-			for _, connection in getconnections(UpdateIndustry.OnClientEvent) do
-				restorefunction(connection.Function)
-			end
-		end
 	end
 end
 
 function Automation.AutoTycoonManager:Stop()
-	if self.Restore then
-		pcall(self.Restore())
-		self.Restore = nil
-	end
-
 	for _, Connection in pairs(self.Connections) do
 		Connection:Disconnect()
 		Connection = nil
