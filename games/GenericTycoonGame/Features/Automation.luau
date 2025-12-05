@@ -51,6 +51,8 @@ function Automation.AutoBuyButtons:Start()
 			if TouchInterest and self.Bodypart then
 				firetouchinterest(self.Bodypart, TouchInterest, true)
 				firetouchinterest(self.Bodypart, TouchInterest, false)
+			else
+				print(TouchInterest)
 			end
 		end
 	end)
