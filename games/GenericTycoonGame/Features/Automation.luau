@@ -1,5 +1,5 @@
+print("are we even updating?")
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
-print(Services, Utility)
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
 local Player = Utility.GetPlayer()
