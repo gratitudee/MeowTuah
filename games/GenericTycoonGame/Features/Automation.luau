@@ -123,6 +123,8 @@ function Automation.AutoAscend:Start()
 	end
 end
 
+function Automation.AutoAscend:Stop() end
+
 function Automation.AutoTycoonManager:Start()
 	local SelectIndustry = ReplicatedStorage.RemoteEvents.SelectNewIndusty
 	local UpdateIndustry = ReplicatedStorage.RemoteEvents.UpdateIndustries
