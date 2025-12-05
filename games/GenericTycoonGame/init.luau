@@ -57,6 +57,21 @@ return function(self)
 		Tooltip = "Automatically chooses the best tycoon manager option.",
 	})
 
+	AutomationLeft:AddToggle("AutoGetBerry", {
+		Text = "Auto Collect Berries",
+		Default = false,
+		Tooltip = "Automatically tweens towards berries and collects them.",
+	})
+
+	AutomationLeft:AddSlider("AutoGetBerryTweenSpeed", {
+		Text = "Auto Collect Berry Speed",
+		Default = 100,
+		Min = 1,
+		Max = 500,
+		Rounding = 1,
+		Compact = false,
+	})
+
 	Toggles.AutoBuyButtons:OnChanged(function()
 		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
@@ -77,6 +92,14 @@ return function(self)
 
 	Toggles.AutoTycoonManager:OnChanged(function()
 		Automation.Flags.AutoTycoonManager = Toggles.AutoTycoonManager.Value
+	end)
+
+	Toggles.AutoGetBerry:OnChanged(function()
+		Automation.Flags.AutoGetBerry = Toggles.AutoGetBerry.Value
+	end)
+
+	Options.AutoGetBerryTweenSpeed:OnChanged(function()
+		Automation.Flags.AutoGetBerryOptions["Tween Speed"] = Options.AutoGetBerryTweenSpeed.Value
 	end)
 
 	Automation:Start()
