@@ -182,7 +182,6 @@ function Automation.AutoBuyButtons:ParseString(suffix)
 	suffix = suffix:gsub("[%$,]", "")
 
 	if suffix:match("Token") then
-		print("received token")
 		local num = suffix:match("([%d%.]+)")
 		return tonumber(num) or 0
 	end
