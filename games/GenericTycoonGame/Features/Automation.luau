@@ -110,10 +110,10 @@ function Automation.AutoAscend:Start()
 	for _, Connection in getconnections(UpdateRebirth.OnClientEvent) do
 		local old
 		old = hookfunction(Connection.Function, function(...)
-			if Automation.Flags.AutoRebirth then
+			if Automation.Flags.AutoAscend then
 				local Args = { ... }
 				local Data = Args[1]
-				if Data and Data.CanAscend then
+				if Data and Data.CanAscend and Data.IsAtMaxRebirth then
 					if Ascend:InvokeServer() then
 						MeowTuah.Library:Notify("[AUTO ASCEND] - SUCCESSFULLY ASCENDED!")
 					end
