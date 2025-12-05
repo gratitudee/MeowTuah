@@ -220,7 +220,8 @@ function Automation.AutoBuyButtons:GetButtons()
 			continue
 		end
 
-		if Pref["Ignore Tokens"] then
+		local isFree = Price.Text:lower():find("free") ~= nil
+		if Pref["Ignore Tokens"] and not isFree then
 			local isTokenColor = InnerButton.Color == TokenColor
 			local isTokenText = Price.Text:find("Token")
 
@@ -229,7 +230,7 @@ function Automation.AutoBuyButtons:GetButtons()
 			end
 		end
 
-		local Cost = self:ParseString(Price.Text)
+		local Cost = isFree and 0 or self:ParseString(Price.Text)
 
 		table.insert(ValidButtons, {
 			Instance = Button,
@@ -237,6 +238,7 @@ function Automation.AutoBuyButtons:GetButtons()
 			Hitbox = Hitbox,
 			Cost = Cost,
 			PriceText = Price.Text,
+			isFree = isFree,
 		})
 	end
 
@@ -252,6 +254,16 @@ function Automation.AutoBuyButtons:ChooseButton(ButtonList)
 	local ColorBlue = self.ButtonColours.Blue
 
 	local nonBlue, blue = {}, {}
+
+	if not ButtonList then
+		return nil
+	end
+
+	for _, btn in pairs(ButtonList) do
+		if btn.isFree then
+			return btn
+		end
+	end
 
 	for _, btn in ipairs(ButtonList) do
 		if btn.Color == ColorBlue then
