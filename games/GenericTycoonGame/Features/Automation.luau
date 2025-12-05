@@ -42,6 +42,7 @@ function Automation.AutoBuyButtons:Start()
 		for _, Button in pairs(Event:InvokeServer()) do
 			local TouchInterest = FindFirstChildWhichIsA(Button, "TouchInterest", true)
 			if TouchInterest and self.Bodypart then
+				print("fired touch")
 				firetouchinterest(self.Bodypart, TouchInterest, true)
 				firetouchinterest(self.Bodypart, TouchInterest, false)
 			end
@@ -110,6 +111,7 @@ function Automation.AutoTycoonManager:Start()
 				if HighestValue > 1 and self.Values.BestValue ~= HighestName then
 					self.Values.BestValue = HighestName
 					SelectIndustry:FireServer(HighestName)
+					print(HighestName)
 				end
 			end
 
@@ -120,7 +122,7 @@ function Automation.AutoTycoonManager:Start()
 end
 
 function Automation.AutoTycoonManager:Stop()
-	restorefunction(self.Hooked)
+	pcall(restorefunction, self.Hooked)
 	self.Hooked = nil
 
 	for _, Connection in pairs(self.Connections) do
