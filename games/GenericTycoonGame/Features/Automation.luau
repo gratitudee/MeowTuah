@@ -1,8 +1,5 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
-if not Services or not Utility then
-	print(`{Services}, {Utility}`)
-	return
-end
+print(Services, Utility)
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
 local Player = Utility.GetPlayer()
