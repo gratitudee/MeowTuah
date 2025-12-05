@@ -9,6 +9,10 @@ local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 local Automation = {
 	Flags = {
 		AutoBuyButtons = false,
+		AutoBuyButtonPreferences = {
+			["Ignore Tokens"] = true,
+			["Low Priority Blue Buttons"] = false,
+		},
 		AutoRebirth = false,
 		AutoAscend = false,
 		AutoTycoonManager = false,
@@ -18,6 +22,28 @@ local Automation = {
 		Character = nil,
 		Bodypart = nil,
 		Connections = {},
+		Suffixes = {
+			K = 1e3,
+			M = 1e6,
+			B = 1e9,
+			T = 1e12,
+			Q = 1e15,
+			Qn = 1e18,
+			S = 1e21,
+			Sp = 1e24,
+			Oc = 1e27,
+			No = 1e30,
+			De = 1e33,
+			UDe = 1e36,
+			DDe = 1e39,
+			TDe = 1e42,
+			QDe = 1e45,
+			QnDe = 1e48,
+		},
+		ButtonColours = {
+			Blue = Color3.fromRGB(35, 123, 255),
+			Token = Color3.fromRGB(139, 87, 202),
+		},
 	},
 
 	AutoRebirth = {
@@ -37,25 +63,127 @@ local Automation = {
 	},
 }
 
-function Automation.AutoBuyButtons:Start()
-	local Event = ReplicatedStorage.FetchFunctions.FetchButtonModels
+function Automation.AutoBuyButtons:ParseString(suffix)
+	if typeof(suffix) ~= "string" then
+		return tonumber(suffix)
+	end
 
+	suffix = suffix:gsub("[%$,]", "")
+	local num, suf = suffix:match("([%d%.]+)(%a+)")
+
+	if not num then
+		return tonumber(suffix) or 0
+	end
+
+	num = tonumber(num)
+	local mult = self.Suffixes[suf]
+	if not mult then
+		return num
+	end
+
+	return num * mult
+end
+
+function Automation.AutoBuyButtons:GetButtons()
+	local Event = ReplicatedStorage.FetchFunctions.FetchButtonModels
+	local Buttons, ValidButtons = Event:InvokeServer(), {}
+	local Pref = Automation.Flags.AutoBuyButtonPreferences
+	local TokenColor = self.ButtonColours.Token
+
+	for _, Button in pairs(Buttons) do
+		local InnerButton = Button:FindFirstChild("Button")
+		if not InnerButton then
+			continue
+		end
+
+		local UI = InnerButton:FindFirstChild("UI")
+		if not UI then
+			continue
+		end
+
+		local Price = UI:FindFirstChild("Price")
+		if not Price or Price.Text == "" then
+			continue
+		end
+
+		local Hitbox = Button:FindFirstChild("Hitbox")
+		if not Hitbox then
+			continue
+		end
+
+		if Pref["Ignore Tokens"] then
+			local isTokenColor = InnerButton.Color == TokenColor
+			local isTokenText = Price.Text:find("Token")
+
+			if isTokenColor or isTokenText then
+				continue
+			end
+		end
+
+		local Cost = self:ParseString(Price.Text)
+
+		table.insert(ValidButtons, {
+			Instance = Button,
+			Color = InnerButton.Color,
+			Hitbox = Hitbox,
+			Cost = Cost,
+			PriceText = Price.Text,
+		})
+	end
+
+	if #ValidButtons == 0 then
+		return nil
+	end
+
+	return ValidButtons
+end
+
+function Automation.AutoBuyButtons:ChooseButton(ButtonList)
+	local Pref = Automation.Flags.AutoBuyButtonPreferences
+	local ColorBlue = self.ButtonColours.Blue
+
+	local nonBlue, blue = {}, {}
+
+	for _, btn in ipairs(ButtonList) do
+		if btn.Color == ColorBlue then
+			table.insert(blue, btn)
+		else
+			table.insert(nonBlue, btn)
+		end
+	end
+
+	local function cheapest(list)
+		table.sort(list, function(a, b)
+			return a.Cost < b.Cost
+		end)
+		return list[1]
+	end
+
+	if Pref["Low Priority Blue Buttons"] then
+		if #nonBlue > 0 then
+			return cheapest(nonBlue)
+		end
+		if #blue > 0 then
+			return cheapest(blue)
+		end
+		return nil
+	end
+
+	return cheapest(ButtonList)
+end
+
+function Automation.AutoBuyButtons:Start()
 	local RunConnection = Heartbeat:Connect(function()
 		if not Automation.Flags.AutoBuyButtons then
 			return
 		end
 
-		for _, Button in pairs(Event:InvokeServer()) do
-			local Hitbox = FindFirstChild(Button, "Hitbox")
-			if not Hitbox then
-				print("nio")
-				continue
-			end
+		local Buttons = self:GetButtons()
+		local ChosenButton = self:ChooseButton(Buttons)
 
-			if Hitbox and self.Bodypart then
-				firetouchinterest(Hitbox, self.Bodypart, true)
-				firetouchinterest(Hitbox, self.Bodypart, false)
-			end
+		if ChosenButton and self.Bodypart then
+			firetouchinterest(ChosenButton.Hitbox, self.Bodypart, true)
+			firetouchinterest(ChosenButton.Hitbox, self.Bodypart, false)
 		end
 	end)
 

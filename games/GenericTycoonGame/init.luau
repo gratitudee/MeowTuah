@@ -30,6 +30,15 @@ return function(self)
 		Tooltip = "Automatically buys the tycoon buttons.",
 	})
 
+	AutomationLeft:AddDropdown("PurchasingOptions", {
+		Values = { "Ignore Tokens", "Low Priority Blue Buttons" },
+		Default = 1,
+		Multi = true,
+
+		Text = "Purchasing Options",
+		Tooltip = "Modify how the script finds buttons to buy.",
+	})
+
 	AutomationLeft:AddToggle("AutoRebirth", {
 		Text = "Auto Rebirth",
 		Default = false,
@@ -50,6 +59,12 @@ return function(self)
 
 	Toggles.AutoBuyButtons:OnChanged(function()
 		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
+	end)
+
+	Options.PurchasingOptions:OnChanged(function()
+		for key, value in pairs(Options.PurchasingOptions.Value) do
+			Automation.Flags.AutoBuyButtonPreferences[key] = value
+		end
 	end)
 
 	Toggles.AutoRebirth:OnChanged(function()
