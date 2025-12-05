@@ -229,7 +229,7 @@ function Automation.AutoBuyButtons:GetButtons()
 			local isTokenColor = InnerButton.Color == TokenColor
 			local isTokenText = Price.Text:find("Token")
 			if isTokenColor or isTokenText then
-				print("SKIPPING TOKEN BUTTON:", Price.Text)
+				print("SKIPPING TOKEN BUTTON:", Price.Text, Pref["Ignore Tokens"])
 				continue
 			end
 		end
