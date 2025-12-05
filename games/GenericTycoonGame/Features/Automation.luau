@@ -32,7 +32,7 @@ local Automation = {
 function Automation.AutoBuyButtons:Start()
 	local Event = ReplicatedStorage.FetchFunctions.FetchButtonModels
 
-	local RunConnection = Heartbeat:Connect(function()
+	local RunConnection = RunService.Heartbeat:Connect(function()
 		if not Automation.Flags.AutoBuyButtons then
 			return
 		end
