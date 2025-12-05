@@ -47,15 +47,12 @@ function Automation.AutoBuyButtons:Start()
 				continue
 			end
 
-			print(Hitbox)
-
-			local TouchInterest = FindFirstChild(Hitbox, "TouchInterest")
-			if TouchInterest and self.Bodypart then
+			if Hitbox and self.Bodypart then
 				print("fiad")
-				firetouchinterest(TouchInterest, self.Bodypart, true)
-				firetouchinterest(TouchInterest, self.Bodypart, false)
+				firetouchinterest(Hitbox, self.Bodypart, true)
+				firetouchinterest(Hitbox, self.Bodypart, false)
 			else
-				print(TouchInterest)
+				print(Hitbox)
 			end
 		end
 	end)
