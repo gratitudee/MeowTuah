@@ -3,7 +3,9 @@ local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Util
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
 local Player = Utility.GetPlayer()
+print(Utility and Utility.index)
 local Heartbeat = Utility.index(RunService, "Heartbeat")
+
 local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 
 local Automation = {
