@@ -15,6 +15,7 @@ local Automation = {
 		AutoBuyButtonPreferences = {
 			["Ignore Tokens"] = true,
 			["Low Priority Blue Buttons"] = false,
+			["Rapid Buy (Overrides All)"] = false,
 		},
 		AutoRebirth = false,
 		AutoAscend = false,
@@ -158,7 +159,18 @@ function Automation.AutoGetBerry:Start()
 	table.insert(self.Connections, CharacterAddedConnection)
 end
 
-function Automation.AutoGetBerry:Stop() end
+function Automation.AutoGetBerry:Stop()
+	for _, connection in pairs(self.Connections) do
+		connection:Disconnect()
+		connection = nil
+	end
+
+	if self.ActiveTween then
+		self.ActiveTween:Cancel()
+		self.ActiveTween = nil
+	end
+	self.CurrentTarget = nil
+end
 
 function Automation.AutoBuyButtons:ParseString(suffix)
 	if typeof(suffix) ~= "string" then
@@ -270,17 +282,31 @@ function Automation.AutoBuyButtons:ChooseButton(ButtonList)
 end
 
 function Automation.AutoBuyButtons:Start()
+	local PlayerMoneyValue = Player.leaderstats.Money
 	local RunConnection = Heartbeat:Connect(function()
 		if not Automation.Flags.AutoBuyButtons then
 			return
 		end
 
-		local Buttons = self:GetButtons()
-		local ChosenButton = self:ChooseButton(Buttons)
+		if not self.Bodypart then
+			return
+		end
 
-		if ChosenButton and self.Bodypart then
-			firetouchinterest(ChosenButton.Hitbox, self.Bodypart, true)
-			firetouchinterest(ChosenButton.Hitbox, self.Bodypart, false)
+		local Buttons = self:GetButtons()
+		local ParsedPlayerMoney = self:ParseString(PlayerMoneyValue.Value)
+		if Automation.Flags.AutoBuyButtonPreferences["Rapid Buy (Overrides All)"] then
+			for _, button in pairs(Buttons) do
+				if ParsedPlayerMoney >= button.Cost then
+					firetouchinterest(button.Hitbox, self.Bodypart, true)
+					firetouchinterest(button.Hitbox, self.Bodypart, false)
+				end
+			end
+		else
+			local ChosenButton = self:ChooseButton(Buttons)
+			if ChosenButton and ParsedPlayerMoney >= ChosenButton.Cost then
+				firetouchinterest(ChosenButton.Hitbox, self.Bodypart, true)
+				firetouchinterest(ChosenButton.Hitbox, self.Bodypart, false)
+			end
 		end
 	end)
 
