@@ -139,10 +139,9 @@ end
 
 function Automation.AutoTycoonManager:Stop()
 	if self.Restore then
-		self.Restore()
+		pcall(self.Restore())
 		self.Restore = nil
 	end
-	self.Hooked = nil
 
 	for _, Connection in pairs(self.Connections) do
 		Connection:Disconnect()
