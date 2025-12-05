@@ -43,15 +43,15 @@ return function(self)
 	})
 
 	Toggles.AutoBuyButtons:OnChanged(function()
-		Automation.AutoBuyButtons = Toggles.AutoBuyButtons.Value
+		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
 
 	Toggles.AutoRebirth:OnChanged(function()
-		Automation.AutoRebirth = Toggles.AutoRebirth.Value
+		Automation.Flags.AutoRebirth = Toggles.AutoRebirth.Value
 	end)
 
 	Toggles.AutoTycoonManager:OnChanged(function()
-		Automation.AutoTycoonManager = Toggles.AutoTycoonManager.Value
+		Automation.Flags.AutoTycoonManager = Toggles.AutoTycoonManager.Value
 	end)
 
 	Automation:Start()
