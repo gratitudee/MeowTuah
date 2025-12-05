@@ -1,9 +1,12 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
+local TweenService = Services.TweenService
+
 local Player = Utility.GetPlayer()
 local Heartbeat = Utility.index(RunService, "Heartbeat")
 local FindFirstChild = Utility.FindFirstChild
+local GetChildren = Utility.GetChildren
 local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 
 local Automation = {
@@ -16,6 +19,10 @@ local Automation = {
 		AutoRebirth = false,
 		AutoAscend = false,
 		AutoTycoonManager = false,
+		AutoGetBerry = false,
+		AutoGetBerryOptions = {
+			["Tween Speed"] = 100,
+		},
 	},
 
 	AutoBuyButtons = {
@@ -61,7 +68,97 @@ local Automation = {
 		},
 		Connections = {},
 	},
+
+	AutoGetBerry = {
+		Connections = {},
+		CurrentTarget = nil,
+	},
 }
+
+function Automation.AutoGetBerry:Start()
+	local Growables = FindFirstChild(workspace, "Growables")
+
+	self.Character = Utility.index(Player, "Character")
+	self.Root = FindFirstChild(self.Character, "HumanoidRootPart")
+	self.CurrentTarget = nil
+	self.ActiveTween = nil
+
+	local function ClearTween()
+		if self.ActiveTween then
+			self.ActiveTween:Cancel()
+			self.ActiveTween = nil
+		end
+		self.CurrentTarget = nil
+	end
+
+	local CharacterAddedConnection = Utility.index(Player, "CharacterAdded"):Connect(function(Character)
+		self.Character = Character
+		self.Root = FindFirstChild(Character, "HumanoidRootPart")
+		ClearTween()
+	end)
+
+	local HeartbeatConnection = Heartbeat:Connect(function()
+		if not Automation.Flags.AutoGetBerry then
+			return
+		end
+
+		if not self.Root or not self.Root:IsDescendantOf(workspace) then
+			return
+		end
+
+		if self.CurrentTarget or self.ActiveTween then
+			return
+		end
+
+		local Children = GetChildren(Growables)
+		if #Children == 0 then
+			return
+		end
+
+		self.CurrentTarget = Children[1]
+		local Target = self.CurrentTarget
+		if not Target:IsDescendantOf(workspace) then
+			self.CurrentTarget = nil
+			return
+		end
+
+		local Distance = (self.Root.Position - Target.Position).Magnitude
+		local Speed = Automation.Flags.AutoGetBerryOptions["Tween Speed"]
+		local Info = TweenInfo.new(Distance / Speed, Enum.EasingStyle.Linear)
+
+		local Tween = TweenService:Create(self.Root, Info, { CFrame = Target.CFrame })
+		self.ActiveTween = Tween
+		self.Root.Anchored = true
+
+		local Completed
+		Completed = Tween.Completed:Connect(function()
+			Completed:Disconnect()
+			ClearTween()
+			self.Root.Anchored = false
+		end)
+
+		Tween:Play()
+
+		task.spawn(function()
+			while self.CurrentTarget == Target and Target:IsDescendantOf(workspace) do
+				task.wait()
+			end
+
+			if self.ActiveTween == Tween then
+				ClearTween()
+			end
+
+			if Completed.Connected then
+				Completed:Disconnect()
+			end
+		end)
+	end)
+
+	table.insert(self.Connections, HeartbeatConnection)
+	table.insert(self.Connections, CharacterAddedConnection)
+end
+
+function Automation.AutoGetBerry:Stop() end
 
 function Automation.AutoBuyButtons:ParseString(suffix)
 	if typeof(suffix) ~= "string" then
