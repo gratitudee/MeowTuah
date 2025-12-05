@@ -49,7 +49,7 @@ function Automation.AutoBuyButtons:Start()
 
 			print(Hitbox)
 
-			local TouchInterest = FindFirstChildWhichIsA(Hitbox, "TouchInterest", true)
+			local TouchInterest = FindFirstChild(Hitbox, "TouchInterest")
 			print(Hitbox, TouchInterest)
 			if TouchInterest and self.Bodypart then
 				firetouchinterest(self.Bodypart, TouchInterest, true)
