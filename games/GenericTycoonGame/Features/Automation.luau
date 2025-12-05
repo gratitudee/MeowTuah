@@ -1,7 +1,9 @@
-print("are we even updating?")
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
+local Player = Utility.GetPlayer()
+local Heartbeat = Utility.index(RunService, "Heartbeat")
+local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 
 local Automation = {
 	Flags = {
@@ -32,7 +34,7 @@ local Automation = {
 function Automation.AutoBuyButtons:Start()
 	local Event = ReplicatedStorage.FetchFunctions.FetchButtonModels
 
-	local RunConnection = RunService.Heartbeat:Connect(function()
+	local RunConnection = Heartbeat:Connect(function()
 		if not Automation.Flags.AutoBuyButtons then
 			return
 		end
