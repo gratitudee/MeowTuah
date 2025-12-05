@@ -36,6 +36,12 @@ return function(self)
 		Tooltip = "Automatically rebirths for you.",
 	})
 
+	AutomationLeft:AddToggle("AutoAscend", {
+		Text = "Auto Ascend",
+		Default = false,
+		Tooltip = "Automatically ascends for you.",
+	})
+
 	AutomationLeft:AddToggle("AutoTycoonManager", {
 		Text = "Auto Tycoon Manager",
 		Default = false,
@@ -48,6 +54,10 @@ return function(self)
 
 	Toggles.AutoRebirth:OnChanged(function()
 		Automation.Flags.AutoRebirth = Toggles.AutoRebirth.Value
+	end)
+
+	Toggles.AutoAscend:OnChanged(function()
+		Automation.Flags.AutoAscend = Toggles.AutoAscend.Value
 	end)
 
 	Toggles.AutoTycoonManager:OnChanged(function()

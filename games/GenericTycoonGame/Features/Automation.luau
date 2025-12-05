@@ -10,6 +10,7 @@ local Automation = {
 	Flags = {
 		AutoBuyButtons = false,
 		AutoRebirth = false,
+		AutoAscend = false,
 		AutoTycoonManager = false,
 	},
 
@@ -20,6 +21,10 @@ local Automation = {
 	},
 
 	AutoRebirth = {
+		Connections = {},
+	},
+
+	AutoAscend = {
 		Connections = {},
 	},
 
@@ -77,24 +82,46 @@ function Automation.AutoBuyButtons:Stop()
 end
 
 function Automation.AutoRebirth:Start()
-	--[[
-	local UpdateRebirth = game:GetService("ReplicatedStorage").RemoteEvents.UpdateRebirthFrame
+	local UpdateRebirth = ReplicatedStorage.RemoteEvents.UpdateRebirthFrame
+	local Rebirth = ReplicatedStorage.RemoteFunctions.Rebirth
 	for _, Connection in getconnections(UpdateRebirth.OnClientEvent) do
 		local old
 		old = hookfunction(Connection.Function, function(...)
 			if Automation.Flags.AutoRebirth then
 				local Args = { ... }
 				if Args and Args.CanRebirth == true and Args.IsAtMaxRebirth ~= true then
-					-- rebirth.
+					if Rebirth:InvokeServer() then
+						MeowTuah.Library:Notify("[AUTO REBIRTH] - SUCCESSFULLY REBIRTHED!")
+					end
 				end
 			end
 
 			return old(...)
 		end)
-	end]]
-	--
+	end
 end
+
 function Automation.AutoRebirth:Stop() end
+
+function Automation.AutoAscend:Start()
+	local UpdateRebirth = ReplicatedStorage.RemoteEvents.UpdateRebirthFrame
+	local Ascend = ReplicatedStorage.RemoteFunctions.Ascend
+	for _, Connection in getconnections(UpdateRebirth.OnClientEvent) do
+		local old
+		old = hookfunction(Connection.Function, function(...)
+			if Automation.Flags.AutoRebirth then
+				local Args = { ... }
+				if Args and Args.CanAscend == true then
+					if Ascend:InvokeServer() then
+						MeowTuah.Library:Notify("[AUTO ASCEND] - SUCCESSFULLY ASCEND!")
+					end
+				end
+			end
+
+			return old(...)
+		end)
+	end
+end
 
 function Automation.AutoTycoonManager:Start()
 	local SelectIndustry = ReplicatedStorage.RemoteEvents.SelectNewIndusty
