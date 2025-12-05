@@ -4,6 +4,8 @@ local RunService = Services.RunService
 local TweenService = Services.TweenService
 
 local Player = Utility.GetPlayer()
+local PlayerGui = Utility.index(Player, "PlayerGui")
+local TokenFrame = PlayerGui.MainUI.TokensFrame.Amount
 local Heartbeat = Utility.index(RunService, "Heartbeat")
 local FindFirstChild = Utility.FindFirstChild
 local GetChildren = Utility.GetChildren
@@ -52,6 +54,7 @@ local Automation = {
 			Blue = Color3.fromRGB(35, 123, 255),
 			Token = Color3.fromRGB(139, 87, 202),
 		},
+		CurrentTokens = nil,
 	},
 
 	AutoRebirth = {
@@ -223,6 +226,7 @@ function Automation.AutoBuyButtons:GetButtons()
 		end
 
 		local isFree = Price.Text:lower():find("free") ~= nil
+		local isToken = InnerButton.Color == TokenColor
 
 		if Automation.Flags.AutoBuyButtonPreferences["Ignore Tokens"] and not isFree then
 			local isTokenColor = InnerButton.Color == TokenColor
@@ -241,6 +245,7 @@ function Automation.AutoBuyButtons:GetButtons()
 			Cost = Cost,
 			PriceText = Price.Text,
 			isFree = isFree,
+			isToken = isToken,
 		})
 	end
 
@@ -251,74 +256,97 @@ function Automation.AutoBuyButtons:GetButtons()
 	return ValidButtons
 end
 
-function Automation.AutoBuyButtons:ChooseButton(ButtonList)
+function Automation.AutoBuyButtons:ChooseButton(ButtonList, PlayerMoney)
 	local ColorBlue = self.ButtonColours.Blue
-
-	local nonBlue, blue = {}, {}
 
 	if not ButtonList then
 		return nil
 	end
 
-	for _, btn in pairs(ButtonList) do
-		if btn.isFree then
-			return btn
-		end
+	local NonBlue, Blue = {}, {}
+
+	local function CanBuy(btn)
+		local balance = btn.isToken and self.CurrentTokens or PlayerMoney
+		return balance >= (btn.Cost or math.huge)
 	end
 
-	for _, btn in ipairs(ButtonList) do
-		if btn.Color == ColorBlue then
-			table.insert(blue, btn)
-		else
-			table.insert(nonBlue, btn)
-		end
-	end
-
-	local function cheapest(list)
+	local function Cheapest(list)
 		table.sort(list, function(a, b)
 			return a.Cost < b.Cost
 		end)
 		return list[1]
 	end
 
-	if Automation.Flags.AutoBuyButtonPreferences["Low Priority Blue Buttons"] then
-		if #nonBlue > 0 then
-			return cheapest(nonBlue)
+	for _, btn in ipairs(ButtonList) do
+		if btn.isFree then
+			return btn
 		end
-		if #blue > 0 then
-			return cheapest(blue)
+	end
+
+	local AffordableButtons = {}
+	for _, btn in ipairs(ButtonList) do
+		if CanBuy(btn) then
+			table.insert(AffordableButtons, btn)
+		end
+	end
+
+	if #AffordableButtons == 0 then
+		return nil
+	end
+
+	for _, btn in ipairs(AffordableButtons) do
+		if btn.Color == ColorBlue then
+			table.insert(Blue, btn)
+		else
+			table.insert(NonBlue, btn)
+		end
+	end
+
+	if Automation.Flags.AutoBuyButtonPreferences["Low Priority Blue Buttons"] then
+		if #NonBlue > 0 then
+			return Cheapest(NonBlue)
+		end
+		if #Blue > 0 then
+			return Cheapest(Blue)
 		end
 		return nil
 	end
 
-	return cheapest(ButtonList)
+	return Cheapest(AffordableButtons)
 end
 
 function Automation.AutoBuyButtons:Start()
 	local PlayerMoneyValue = Player.leaderstats.Money
 	local RunConnection = Heartbeat:Connect(function()
-		if not Automation.Flags.AutoBuyButtons then
-			return
-		end
+		self.CurrentTokens = self:ParseString(TokenFrame.Text)
 
-		if not self.Bodypart then
+		if not Automation.Flags.AutoBuyButtons or not self.Bodypart then
 			return
 		end
 
 		local Buttons = self:GetButtons()
-		local ParsedPlayerMoney = self:ParseString(PlayerMoneyValue.Value)
-		if Automation.Flags.AutoBuyButtonPreferences["Rapid Buy (Overrides All)"] then
-			for _, button in pairs(Buttons) do
-				if ParsedPlayerMoney >= button.Cost then
-					firetouchinterest(button.Hitbox, self.Bodypart, true)
-					firetouchinterest(button.Hitbox, self.Bodypart, false)
+		if not Buttons or #Buttons == 0 then
+			return
+		end
+
+		local PlayerMoney = self:ParseString(PlayerMoneyValue.Value)
+		local RapidMode = Automation.Flags.AutoBuyButtonPreferences["Rapid Buy (Overrides All)"]
+
+		if RapidMode then
+			for _, button in ipairs(Buttons) do
+				if button.Cost and button.Hitbox then
+					local balance = button.isToken and self.CurrentTokens or PlayerMoney
+					if balance >= button.Cost then
+						firetouchinterest(button.Hitbox, self.Bodypart, true)
+						firetouchinterest(button.Hitbox, self.Bodypart, false)
+					end
 				end
 			end
 		else
-			local ChosenButton = self:ChooseButton(Buttons)
-			if ChosenButton and ParsedPlayerMoney >= ChosenButton.Cost then
-				firetouchinterest(ChosenButton.Hitbox, self.Bodypart, true)
-				firetouchinterest(ChosenButton.Hitbox, self.Bodypart, false)
+			local chosen = self:ChooseButton(Buttons, PlayerMoney)
+			if chosen and chosen.Hitbox then
+				firetouchinterest(chosen.Hitbox, self.Bodypart, true)
+				firetouchinterest(chosen.Hitbox, self.Bodypart, false)
 			end
 		end
 	end)
