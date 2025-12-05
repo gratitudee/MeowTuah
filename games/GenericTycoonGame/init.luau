@@ -1,5 +1,6 @@
 local Base = "games/GenericTycoonGame/Features"
 local Automation = LoadModule(`{Base}/Automation.luau`)
+local Exploits = LoadModule(`{Base}/Exploits.luau`)
 
 return function(self)
 	local Library = MeowTuah.Library
@@ -23,6 +24,7 @@ return function(self)
 	}
 
 	local AutomationLeft = Tabs.Main:AddLeftGroupbox("Automation")
+	local ExploitsRight = Tabs.Main:AddRightGroupbox("Exploits")
 
 	AutomationLeft:AddToggle("AutoBuyButtons", {
 		Text = "Auto Buy Buttons",
@@ -72,6 +74,18 @@ return function(self)
 		Compact = false,
 	})
 
+	ExploitsRight:AddToggle("InstantOres", {
+		Text = "[?] Instant Ores",
+		Default = false,
+		Tooltip = "Teleports your ores to the collector.",
+	})
+
+	ExploitsRight:AddToggle("GrowableAura", {
+		Text = "[?] Growable Aura",
+		Default = false,
+		Tooltip = "Collects growables automatically.",
+	})
+
 	Toggles.AutoBuyButtons:OnChanged(function()
 		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
@@ -102,7 +116,16 @@ return function(self)
 		Automation.Flags.AutoGetBerryOptions["Tween Speed"] = Options.AutoGetBerryTweenSpeed.Value
 	end)
 
+	Toggles.InstantOres:OnChanged(function()
+		Exploits.Flags.InstantOres = Toggles.InstantOres.Value
+	end)
+
+	Toggles.GrowableAura:OnChanged(function()
+		Exploits.Flags.GrowableAura = Toggles.GrowableAura.Value
+	end)
+
 	Automation:Start()
+	Exploits:Start()
 
 	local MenuGroup = Tabs.Settings:AddLeftGroupbox("Menu")
 	MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
@@ -169,6 +192,7 @@ return function(self)
 	Library:OnUnload(function()
 		WatermarkHeartbeat:Disconnect()
 		Automation:Stop()
+		Exploits:Stop()
 		Library.Unloaded = true
 	end)
 end
