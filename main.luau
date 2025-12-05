@@ -7,7 +7,7 @@ getgenv().LoadModule = function(ModulePath)
 	end)
 
 	if not Success then
-		print(`[{ModulePath}]: {Result}`)
+		print(`[LOADMODULE] - {ModulePath}: {Result}`)
 		return nil
 	end
 
