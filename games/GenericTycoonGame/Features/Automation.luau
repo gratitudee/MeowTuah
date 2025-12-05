@@ -40,12 +40,16 @@ function Automation.AutoBuyButtons:Start()
 		end
 
 		for _, Button in pairs(Event:InvokeServer()) do
-			local TouchInterest = FindFirstChildWhichIsA(Button.Parent, "TouchInterest", true)
+			local Hitbox = FindFirstChild(Button, "Hitbox")
+			if not Hitbox then
+				print("nio")
+				continue
+			end
+
+			local TouchInterest = FindFirstChildWhichIsA(Hitbox, "TouchInterest", true)
 			if TouchInterest and self.Bodypart then
 				firetouchinterest(self.Bodypart, TouchInterest, true)
 				firetouchinterest(self.Bodypart, TouchInterest, false)
-			else
-				print(TouchInterest, self.Bodypart)
 			end
 		end
 	end)
