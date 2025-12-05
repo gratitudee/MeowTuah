@@ -43,7 +43,6 @@ return function(self)
 	})
 
 	Toggles.AutoBuyButtons:OnChanged(function()
-		print(Automation)
 		Automation.Flags.AutoBuyButtons = Toggles.AutoBuyButtons.Value
 	end)
 
