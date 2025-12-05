@@ -78,6 +78,7 @@ return function(self)
 
 	Options.PurchasingOptions:OnChanged(function()
 		for key, value in pairs(Options.PurchasingOptions.Value) do
+			print(key, value)
 			Automation.Flags.AutoBuyButtonPreferences[key] = value
 		end
 	end)
