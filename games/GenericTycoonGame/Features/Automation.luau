@@ -1,9 +1,11 @@
 local Services, Utility = LoadModule("core/Services.lua"), LoadModule("core/Utility.lua")
-
+if not Services or not Utility then
+	print(`{Services}, {Utility}`)
+	return
+end
 local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
 local Player = Utility.GetPlayer()
-print(Utility and Utility.index)
 local Heartbeat = Utility.index(RunService, "Heartbeat")
 
 local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
