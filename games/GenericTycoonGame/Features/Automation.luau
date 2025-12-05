@@ -228,14 +228,11 @@ function Automation.AutoBuyButtons:GetButtons()
 			local isTokenColor = InnerButton.Color == TokenColor
 			local isTokenText = Price.Text:find("Token")
 			if isTokenColor or isTokenText then
-				print("SKIPPING TOKEN BUTTON:", Price.Text, Automation.Flags.AutoBuyButtonPreferences["Ignore Tokens"])
 				continue
 			end
 		end
 
 		local Cost = isFree and 0 or self:ParseString(Price.Text)
-
-		print("ADDING BUTTON:", Price.Text, "Cost:", Cost)
 
 		table.insert(ValidButtons, {
 			Instance = Button,
@@ -246,8 +243,6 @@ function Automation.AutoBuyButtons:GetButtons()
 			isFree = isFree,
 		})
 	end
-
-	print("TOTAL VALID BUTTONS:", #ValidButtons)
 
 	if #ValidButtons == 0 then
 		return nil
