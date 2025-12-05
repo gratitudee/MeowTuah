@@ -178,19 +178,25 @@ function Automation.AutoBuyButtons:ParseString(suffix)
 	end
 
 	suffix = suffix:gsub("[%$,]", "")
-	local num, suf = suffix:match("([%d%.]+)(%a+)")
+	suffix = suffix:lower()
+	suffix = suffix:gsub("%s*tokens?$", "")
 
+	local num, suf = suffix:match("([%d%.]+)(%a*)$")
 	if not num then
 		return tonumber(suffix) or 0
 	end
 
 	num = tonumber(num)
-	local mult = self.Suffixes[suf]
-	if not mult then
+	if suf == "" then
 		return num
 	end
 
-	return num * mult
+	local mult = self.Suffixes[suf]
+	if mult then
+		return num * mult
+	end
+
+	return num
 end
 
 function Automation.AutoBuyButtons:GetButtons()
