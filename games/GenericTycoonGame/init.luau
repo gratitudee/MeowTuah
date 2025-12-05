@@ -31,7 +31,7 @@ return function(self)
 	})
 
 	AutomationLeft:AddDropdown("PurchasingOptions", {
-		Values = { "Ignore Tokens", "Low Priority Blue Buttons" },
+		Values = { "Ignore Tokens", "Low Priority Blue Buttons", "Rapid Buy (Overrides All)" },
 		Default = 1,
 		Multi = true,
 
