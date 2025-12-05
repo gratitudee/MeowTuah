@@ -48,11 +48,8 @@ function Automation.AutoBuyButtons:Start()
 			end
 
 			if Hitbox and self.Bodypart then
-				print("fiad")
 				firetouchinterest(Hitbox, self.Bodypart, true)
 				firetouchinterest(Hitbox, self.Bodypart, false)
-			else
-				print(Hitbox)
 			end
 		end
 	end)
@@ -119,7 +116,6 @@ function Automation.AutoTycoonManager:Start()
 				if HighestValue > 1 and self.Values.BestValue ~= HighestName then
 					self.Values.BestValue = HighestName
 					SelectIndustry:FireServer(HighestName)
-					print(HighestName)
 				end
 			end
 
@@ -129,6 +125,8 @@ function Automation.AutoTycoonManager:Start()
 end
 
 function Automation.AutoTycoonManager:Stop()
+	-- unsure how to actually unhook shit yet tbh
+
 	for _, Connection in pairs(self.Connections) do
 		Connection:Disconnect()
 		Connection = nil
