@@ -131,7 +131,11 @@ end
 
 function Automation:Start()
 	for _, Feature in pairs(Automation) do
-		if Feature ~= Automation.Flags and Feature.Start then
+		if type(Feature) == "function" then
+			continue
+		end
+
+		if Feature ~= Automation.Flags then
 			Feature:Start()
 		end
 	end
@@ -139,7 +143,11 @@ end
 
 function Automation:Stop()
 	for _, Feature in pairs(Automation) do
-		if Feature ~= Automation.Flags and Feature.Stop then
+		if type(Feature) == "function" then
+			continue
+		end
+
+		if Feature ~= Automation.Flags then
 			Feature:Stop()
 		end
 	end
