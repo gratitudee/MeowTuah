@@ -3,6 +3,7 @@ local ReplicatedStorage = Services.ReplicatedStorage
 local RunService = Services.RunService
 local Player = Utility.GetPlayer()
 local Heartbeat = Utility.index(RunService, "Heartbeat")
+local FindFirstChild = Utility.FindFirstChild
 local FindFirstChildWhichIsA = Utility.FindFirstChildWhichIsA
 
 local Automation = {
