@@ -59,22 +59,25 @@ local Automation = {
 
 	AutoRebirth = {
 		Connections = {},
+		Hooked = {},
 	},
 
 	AutoAscend = {
 		Connections = {},
+		Hooked = {},
 	},
 
 	AutoTycoonManager = {
-		Hooked = nil,
 		Values = {
 			BestValue = nil,
 		},
+		Hooked = {},
 		Connections = {},
 	},
 
 	AutoGetBerry = {
 		Connections = {},
+		Hooked = {},
 		CurrentTarget = nil,
 	},
 }
@@ -163,9 +166,15 @@ function Automation.AutoGetBerry:Start()
 end
 
 function Automation.AutoGetBerry:Stop()
-	for _, connection in pairs(self.Connections) do
-		connection:Disconnect()
-		connection = nil
+	for _, Connection in pairs(self.Connections) do
+		Connection:Disconnect()
+		Connection = nil
+	end
+
+	if self.Hooked then
+		for _, Connection in pairs(self.Hooked) do
+			pcall(restorefunction, Connection.Function)
+		end
 	end
 
 	if self.ActiveTween then
@@ -363,9 +372,15 @@ function Automation.AutoBuyButtons:Start()
 end
 
 function Automation.AutoBuyButtons:Stop()
-	for _, connection in pairs(self.Connections) do
-		connection:Disconnect()
-		connection = nil
+	for _, Connection in pairs(self.Connections) do
+		Connection:Disconnect()
+		Connection = nil
+	end
+
+	if self.Hooked then
+		for _, Connection in pairs(self.Hooked) do
+			pcall(restorefunction, Connection.Function)
+		end
 	end
 
 	self.Character = nil
@@ -390,10 +405,22 @@ function Automation.AutoRebirth:Start()
 
 			return old(...)
 		end)
+		table.insert(self.Hooked, Connection)
 	end
 end
 
-function Automation.AutoRebirth:Stop() end
+function Automation.AutoRebirth:Stop()
+	for _, Connection in pairs(self.Connections) do
+		Connection:Disconnect()
+		Connection = nil
+	end
+
+	if self.Hooked then
+		for _, Connection in pairs(self.Hooked) do
+			pcall(restorefunction, Connection.Function)
+		end
+	end
+end
 
 function Automation.AutoAscend:Start()
 	local UpdateRebirth = ReplicatedStorage.RemoteEvents.UpdateRebirthFrame
@@ -413,10 +440,22 @@ function Automation.AutoAscend:Start()
 
 			return old(...)
 		end)
+		table.insert(self.Hooked, Connection)
 	end
 end
 
-function Automation.AutoAscend:Stop() end
+function Automation.AutoAscend:Stop()
+	for _, Connection in pairs(self.Connections) do
+		Connection:Disconnect()
+		Connection = nil
+	end
+
+	if self.Hooked then
+		for _, Connection in pairs(self.Hooked) do
+			pcall(restorefunction, Connection.Function)
+		end
+	end
+end
 
 function Automation.AutoTycoonManager:Start()
 	local SelectIndustry = ReplicatedStorage.RemoteEvents.SelectNewIndusty
@@ -443,15 +482,20 @@ function Automation.AutoTycoonManager:Start()
 
 			return old(...)
 		end)
+		table.insert(self.Hooked, Connection)
 	end
 end
 
 function Automation.AutoTycoonManager:Stop()
-	-- unsure how to actually unhook shit yet tbh
-
 	for _, Connection in pairs(self.Connections) do
 		Connection:Disconnect()
 		Connection = nil
+	end
+
+	if self.Hooked then
+		for _, Connection in pairs(self.Hooked) do
+			pcall(restorefunction, Connection.Function)
+		end
 	end
 end
 
